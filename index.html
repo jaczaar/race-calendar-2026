@@ -26,10 +26,10 @@
       --c-sail: #d63384;
       --c-beirut: #7c4dff;
 
-      --c-base: #bbdefb;
-      --c-build: #90caf9;
-      --c-peak: #42a5f5;
-      --c-taper: #c8e6c9;
+      --c-base: #c5cae9;
+      --c-build: #7986cb;
+      --c-peak: #3949ab;
+      --c-taper: #81c784;
 
       --cell-size: 22px;
       --cell-gap: 2px;
@@ -47,7 +47,7 @@
 
     .page {
       width: 100%;
-      max-width: 860px;
+      max-width: 960px;
     }
 
     header {
@@ -74,20 +74,19 @@
       margin-top: 0.3rem;
     }
 
-    /* ── Year Grid ── */
+    /* ── Year Grid (horizontal: months = rows, days = columns) ── */
     .year-grid {
       display: flex;
+      flex-direction: column;
       gap: 0;
       overflow-x: auto;
       padding-bottom: 0.5rem;
     }
 
-    .month-col {
+    .month-row {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      flex: 1;
-      min-width: 0;
+      gap: 0;
     }
 
     .month-label {
@@ -96,21 +95,46 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-dim);
-      margin-bottom: 6px;
-      height: 18px;
-      display: flex;
-      align-items: center;
+      width: 36px;
+      flex-shrink: 0;
+      text-align: right;
+      padding-right: 8px;
     }
 
     .month-label.has-today { color: var(--today-ring); }
 
     .month-days {
       display: flex;
-      flex-direction: column;
       gap: var(--cell-gap);
-      width: 100%;
-      align-items: center;
     }
+
+    /* Day number header row */
+    .day-nums-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 4px;
+    }
+
+    .day-nums-row .spacer {
+      width: 36px;
+      flex-shrink: 0;
+    }
+
+    .day-nums-row .nums {
+      display: flex;
+      gap: var(--cell-gap);
+    }
+
+    .day-num {
+      width: var(--cell-size);
+      text-align: center;
+      font-size: 0.55rem;
+      color: var(--text-faint);
+      font-weight: 500;
+    }
+
+    .day-num.dim { color: transparent; }
 
     .day {
       width: var(--cell-size);
@@ -124,12 +148,13 @@
       align-items: center;
       justify-content: center;
       font-size: 0;
+      flex-shrink: 0;
     }
 
     .day:hover {
-      transform: scale(1.4);
+      transform: scale(1.5);
       z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     }
 
     .day:hover::after {
@@ -142,11 +167,12 @@
       color: #fff;
       font-size: 0.6rem;
       font-weight: 600;
-      padding: 3px 7px;
+      padding: 4px 8px;
       border-radius: 4px;
-      white-space: nowrap;
+      white-space: pre;
       pointer-events: none;
       z-index: 20;
+      line-height: 1.4;
     }
 
     .day.empty {
@@ -161,12 +187,12 @@
 
     .day.race {
       border-radius: 50%;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
       z-index: 6;
     }
 
     .day.race:hover {
-      transform: scale(1.6);
+      transform: scale(1.7);
     }
 
     .day.race.potential-race {
@@ -189,27 +215,47 @@
       color: inherit;
     }
 
-    /* Day number row headers */
-    .day-nums {
-      display: flex;
-      flex-direction: column;
-      gap: var(--cell-gap);
-      margin-right: 6px;
-      padding-top: 24px;
+    /* Overlap: split cell with two or three colors */
+    .day.overlap-2 {
+      background: none !important;
+      overflow: hidden;
+    }
+    .day.overlap-2 .half {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+    }
+    .day.overlap-2 .half:first-child {
+      left: 0;
+      border-radius: 4px 0 0 4px;
+    }
+    .day.overlap-2 .half:last-child {
+      right: 0;
+      border-radius: 0 4px 4px 0;
     }
 
-    .day-num {
-      height: var(--cell-size);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-size: 0.55rem;
-      color: var(--text-faint);
-      font-weight: 500;
-      width: 16px;
+    .day.overlap-3 {
+      background: none !important;
+      overflow: hidden;
     }
-
-    .day-num.dim { color: transparent; }
+    .day.overlap-3 .third {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 33.33%;
+    }
+    .day.overlap-3 .third:nth-child(1) {
+      left: 0;
+      border-radius: 4px 0 0 4px;
+    }
+    .day.overlap-3 .third:nth-child(2) {
+      left: 33.33%;
+    }
+    .day.overlap-3 .third:nth-child(3) {
+      right: 0;
+      border-radius: 0 4px 4px 0;
+    }
 
     /* ── Legend ── */
     .legend-wrap {
@@ -259,6 +305,21 @@
       border: 1.5px dashed;
     }
 
+    .legend-swatch.overlap-demo {
+      overflow: hidden;
+      display: flex;
+    }
+    .legend-swatch.overlap-demo .half {
+      width: 50%;
+      height: 100%;
+    }
+    .legend-swatch.overlap-demo .half:first-child {
+      border-radius: 3px 0 0 3px;
+    }
+    .legend-swatch.overlap-demo .half:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+
     @media (max-width: 700px) {
       :root {
         --cell-size: 18px;
@@ -266,9 +327,9 @@
       }
       body { padding: 1.5rem 0.5rem 2rem; }
       header h1 { font-size: 2.2rem; }
-      .day-nums { margin-right: 3px; }
-      .day-num { font-size: 0.48rem; width: 12px; }
-      .month-label { font-size: 0.55rem; }
+      .month-label { font-size: 0.55rem; width: 30px; padding-right: 5px; }
+      .day-nums-row .spacer { width: 30px; }
+      .day-num { font-size: 0.48rem; }
     }
 
     @media (max-width: 480px) {
@@ -277,7 +338,8 @@
         --cell-gap: 1px;
       }
       header h1 { font-size: 1.8rem; }
-      .month-label { font-size: 0.48rem; letter-spacing: 0.04em; }
+      .month-label { font-size: 0.48rem; letter-spacing: 0.04em; width: 26px; padding-right: 4px; }
+      .day-nums-row .spacer { width: 26px; }
       .legend-wrap { gap: 0.5rem; }
       .legend-label { width: 60px; font-size: 0.5rem; }
       .legend-item { font-size: 0.58rem; }
@@ -297,6 +359,15 @@
     const YEAR = 2026;
     const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+    // Training colors: strong, visually distinct per event
+    const TRAINING_COLORS = {
+      tremblant: null, // uses phase colors
+      nespresso: 'rgba(232,129,26,0.35)',
+      hyrox:     'rgba(46,158,90,0.35)',
+      sail:      'rgba(214,51,132,0.30)',
+      beirut:    'rgba(124,77,255,0.20)',
+    };
 
     const events = [
       {
@@ -342,13 +413,11 @@
 
     function parseD(s) { return new Date(s + 'T00:00:00'); }
 
-    function inRange(d, start, end) { return d >= start && d <= end; }
-
     function fmtDate(s) {
       return parseD(s).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
-    // Build date map
+    // Build date map — now tracks ALL colors per day for overlap rendering
     const today = new Date();
     const todayStr = ds(today.getMonth(), today.getDate());
     const todayMonth = today.getMonth();
@@ -357,11 +426,11 @@
     for (let m = 0; m < 12; m++) {
       for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
         const key = ds(m, d);
-        dateMap[key] = { bg: null, labels: [], isRace: false, raceEv: null, isToday: key === todayStr };
+        dateMap[key] = { colors: [], labels: [], isRace: false, raceEv: null, isToday: key === todayStr };
       }
     }
 
-    // Fill phases (70.3)
+    // Fill phases (70.3) — these are the "primary" training plan
     events.forEach(ev => {
       if (ev.phases) {
         ev.phases.forEach(phase => {
@@ -370,7 +439,7 @@
           while (cur <= end) {
             const key = ds(cur.getMonth(), cur.getDate());
             if (dateMap[key]) {
-              dateMap[key].bg = phase.color;
+              dateMap[key].colors.push({ color: phase.color, id: ev.id });
               dateMap[key].labels.push(`${ev.short} ${phase.name}`);
             }
             cur.setDate(cur.getDate() + 1);
@@ -385,10 +454,7 @@
         while (cur <= end) {
           const key = ds(cur.getMonth(), cur.getDate());
           if (dateMap[key]) {
-            // Don't overwrite 70.3 phase colors; layer underneath
-            if (!dateMap[key].bg) {
-              dateMap[key].bg = hexAlpha(ev.color, ev.potential ? 0.08 : 0.14);
-            }
+            dateMap[key].colors.push({ color: TRAINING_COLORS[ev.id], id: ev.id });
             dateMap[key].labels.push(`${ev.name} training`);
           }
           cur.setDate(cur.getDate() + 1);
@@ -403,34 +469,35 @@
       }
     });
 
-    function hexAlpha(hex, a) {
-      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-      return `rgba(${r},${g},${b},${a})`;
-    }
-
     function renderGrid() {
       const grid = document.getElementById('grid');
 
-      // Day number column
-      const numCol = document.createElement('div');
-      numCol.className = 'day-nums';
+      // Day number header row
+      const numRow = document.createElement('div');
+      numRow.className = 'day-nums-row';
+      const spacer = document.createElement('div');
+      spacer.className = 'spacer';
+      numRow.appendChild(spacer);
+      const nums = document.createElement('div');
+      nums.className = 'nums';
       for (let d = 1; d <= 31; d++) {
         const num = document.createElement('div');
         num.className = 'day-num' + (d % 5 !== 1 && d !== 1 ? ' dim' : '');
         num.textContent = d;
-        numCol.appendChild(num);
+        nums.appendChild(num);
       }
-      grid.appendChild(numCol);
+      numRow.appendChild(nums);
+      grid.appendChild(numRow);
 
-      // Month columns
+      // Month rows
       for (let m = 0; m < 12; m++) {
-        const col = document.createElement('div');
-        col.className = 'month-col';
+        const row = document.createElement('div');
+        row.className = 'month-row';
 
         const label = document.createElement('div');
         label.className = 'month-label' + (m === todayMonth ? ' has-today' : '');
         label.textContent = MONTHS_SHORT[m];
-        col.appendChild(label);
+        row.appendChild(label);
 
         const days = document.createElement('div');
         days.className = 'month-days';
@@ -445,13 +512,8 @@
             const info = dateMap[key];
             cell.className = 'day';
 
-            // Background color
-            if (info.bg) {
-              cell.style.background = info.bg;
-            }
-
-            // Race day
             if (info.isRace) {
+              // Race day always takes precedence visually
               cell.classList.add('race');
               cell.style.background = info.raceEv.color;
               cell.setAttribute('data-short', info.raceEv.short);
@@ -461,29 +523,60 @@
                 cell.style.borderColor = info.raceEv.color;
                 cell.style.color = info.raceEv.color;
               }
+            } else if (info.colors.length > 0) {
+              // Deduplicate by event id to get unique colors
+              const unique = [];
+              const seen = new Set();
+              for (const c of info.colors) {
+                if (!seen.has(c.id)) {
+                  seen.add(c.id);
+                  unique.push(c.color);
+                }
+              }
+
+              if (unique.length === 1) {
+                cell.style.background = unique[0];
+              } else if (unique.length === 2) {
+                cell.classList.add('overlap-2');
+                const h1 = document.createElement('div');
+                h1.className = 'half';
+                h1.style.background = unique[0];
+                const h2 = document.createElement('div');
+                h2.className = 'half';
+                h2.style.background = unique[1];
+                cell.appendChild(h1);
+                cell.appendChild(h2);
+              } else {
+                cell.classList.add('overlap-3');
+                unique.slice(0, 3).forEach(color => {
+                  const t = document.createElement('div');
+                  t.className = 'third';
+                  t.style.background = color;
+                  cell.appendChild(t);
+                });
+              }
             }
 
             // Today
             if (info.isToday) cell.classList.add('today');
 
-            // Hover label
+            // Hover label — show ALL events
             const labelParts = [`${MONTHS_SHORT[m]} ${d}`];
-            if (info.labels.length) labelParts.push(info.labels[0]);
-            cell.setAttribute('data-label', labelParts.join(' · '));
+            info.labels.forEach(l => labelParts.push(l));
+            cell.setAttribute('data-label', labelParts.join('\n'));
           }
 
           days.appendChild(cell);
         }
 
-        col.appendChild(days);
-        grid.appendChild(col);
+        row.appendChild(days);
+        grid.appendChild(row);
       }
     }
 
     function renderLegend() {
       const el = document.getElementById('legend');
 
-      // 70.3 phases
       el.innerHTML = `
         <div class="legend-row">
           <div class="legend-label">70.3 Phases</div>
@@ -493,6 +586,15 @@
           <div class="legend-item"><div class="legend-swatch" style="background:var(--c-taper)"></div>Taper</div>
         </div>
         <div class="legend-row">
+          <div class="legend-label">Training</div>
+          ${events.filter(ev => ev.training).map(ev => `
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:${TRAINING_COLORS[ev.id]}"></div>
+              ${ev.name}
+            </div>
+          `).join('')}
+        </div>
+        <div class="legend-row">
           <div class="legend-label">Race Days</div>
           ${events.map(ev => `
             <div class="legend-item">
@@ -500,6 +602,16 @@
               ${ev.name} · ${fmtDate(ev.raceDate)}
             </div>
           `).join('')}
+        </div>
+        <div class="legend-row">
+          <div class="legend-label">Overlap</div>
+          <div class="legend-item">
+            <div class="legend-swatch overlap-demo">
+              <div class="half" style="background:var(--c-base)"></div>
+              <div class="half" style="background:${TRAINING_COLORS.nespresso}"></div>
+            </div>
+            Split cell = multiple trainings on same day
+          </div>
         </div>
       `;
     }
