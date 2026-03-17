@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Race Year</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f4f3f0;
+      --bg-row: #fff;
+      --bg-row-alt: #fafaf8;
+      --bg-hover: #f0efec;
+      --text: #1a1a1a;
+      --text-dim: #6b6b6b;
+      --text-faint: #a0a0a0;
+      --border: #e5e4e0;
+      --border-light: #eeede9;
+
+      --today: #e63946;
+
+      --c-tremblant: #2196f3;
+      --c-nespresso: #e8811a;
+      --c-hyrox: #2e9e5a;
+      --c-sail: #d63384;
+      --c-beirut: #7c4dff;
+
+      --c-base: rgba(33,150,243,0.12);
+      --c-build: rgba(33,150,243,0.25);
+      --c-peak: rgba(33,150,243,0.42);
+      --c-taper: rgba(33,150,243,0.18);
+
+      --label-w: 180px;
+      --row-h: 56px;
+      --timeline-min-w: 1000px;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 3rem;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    header .year {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 1.6rem;
+      color: var(--text-faint);
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .legend-section {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .legend-section-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-faint);
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .legend-bar {
+      width: 20px;
+      height: 6px;
+      border-radius: 3px;
+    }
+
+    .legend-sep {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      margin: 0 0.3rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-row);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .timeline-scroll::-webkit-scrollbar { height: 5px; }
+    .timeline-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .timeline {
+      min-width: var(--timeline-min-w);
+      position: relative;
+    }
+
+    /* ── Month strip ── */
+    .month-strip {
+      display: flex;
+      margin-left: var(--label-w);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      background: var(--bg-row);
+    }
+
+    .month-cell {
+      text-align: center;
+      padding: 0.65rem 0;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      border-left: 1px solid var(--border-light);
+    }
+
+    .month-cell:first-child { border-left: none; }
+
+    .month-cell.has-today {
+      color: var(--today);
+    }
+
+    /* Week ticks */
+    .week-strip {
+      display: flex;
+      margin-left: var(--label-w);
+      border-bottom: 1px solid var(--border-light);
+      height: 12px;
+      position: relative;
+      background: var(--bg-row);
+    }
+
+    .week-tick {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: var(--border-light);
+    }
+
+    /* ── Rows ── */
+    .event-row {
+      display: flex;
+      align-items: center;
+      height: var(--row-h);
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.15s;
+    }
+
+    .event-row:last-child { border-bottom: none; }
+    .event-row:hover { background: var(--bg-hover); }
+    .event-row:nth-child(even) { background: var(--bg-row-alt); }
+    .event-row:nth-child(even):hover { background: var(--bg-hover); }
+
+    .event-label {
+      width: var(--label-w);
+      min-width: var(--label-w);
+      padding: 0 1rem;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .event-row:nth-child(even) .event-label { background: var(--bg-row-alt); }
+    .event-row:hover .event-label { background: var(--bg-hover); }
+
+    .ev-name {
+      font-weight: 700;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .ev-meta {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .ev-type { color: var(--text-faint); }
+
+    .badge {
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px dashed;
+    }
+
+    /* ── Track ── */
+    .event-track {
+      flex: 1;
+      position: relative;
+      height: 100%;
+    }
+
+    .grid-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border-light);
+    }
+
+    /* Phase bars (70.3 only) */
+    .phase-bar {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: filter 0.15s, height 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phase-bar:hover {
+      filter: brightness(0.92);
+      height: 28px;
+      z-index: 5;
+    }
+
+    .phase-bar .plabel {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--c-tremblant);
+      opacity: 0.7;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Training bars (other events) */
+    .training-bar {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: filter 0.15s, height 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .training-bar:hover {
+      filter: brightness(0.9);
+      height: 24px;
+      z-index: 5;
+    }
+
+    .training-bar .tlabel {
+      font-size: 0.55rem;
+      font-weight: 600;
+      color: inherit;
+      opacity: 0.5;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Race dot */
+    .race-dot {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      z-index: 6;
+      cursor: pointer;
+      transition: transform 0.15s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .race-dot:hover {
+      transform: translate(-50%, -50%) scale(1.35);
+    }
+
+    .race-dot.potential {
+      background: transparent !important;
+      border: 2px dashed;
+      box-shadow: none;
+    }
+
+    /* Today */
+    .today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--today);
+      z-index: 7;
+      pointer-events: none;
+    }
+
+    .today-label {
+      position: absolute;
+      z-index: 8;
+      top: -24px;
+      transform: translateX(-50%);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--today);
+      background: var(--bg-row);
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      z-index: 100;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.1s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      max-width: 220px;
+      font-size: 0.7rem;
+      line-height: 1.5;
+    }
+
+    .tooltip.visible { opacity: 1; }
+    .tooltip strong { font-weight: 700; }
+    .tooltip .tt-title { font-weight: 700; font-size: 0.72rem; margin-bottom: 2px; }
+    .tooltip .tt-dim { color: var(--text-dim); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .page { padding: 1.5rem 0.75rem 2rem; }
+      header { margin-bottom: 1.2rem; }
+      header h1 { font-size: 1.3rem; }
+      header .year { font-size: 1.3rem; }
+      .legend { gap: 0.6rem 1rem; margin-bottom: 1rem; }
+      :root { --label-w: 120px; --row-h: 50px; }
+      .ev-name { font-size: 0.7rem; }
+      .ev-meta { font-size: 0.58rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Race Year</h1>
+      <span class="year">2026</span>
+    </header>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="timeline-scroll">
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <script>
+    const YEAR = 2026;
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+    const TOTAL_DAYS = 365;
+
+    const events = [
+      {
+        id: 'tremblant',
+        name: 'Ironman 70.3 Tremblant',
+        short: '70.3',
+        raceDate: '2026-06-21',
+        location: 'Mont-Tremblant, QC',
+        type: '70.3 Triathlon',
+        color: '#2196f3',
+        potential: false,
+        phases: [
+          { name: 'Base',  start: '2026-01-21', end: '2026-04-12', bg: 'var(--c-base)' },
+          { name: 'Build', start: '2026-04-13', end: '2026-05-31', bg: 'var(--c-build)' },
+          { name: 'Peak',  start: '2026-06-01', end: '2026-06-14', bg: 'var(--c-peak)' },
+          { name: 'Taper', start: '2026-06-15', end: '2026-06-20', bg: 'var(--c-taper)' },
+        ]
+      },
+      {
+        id: 'nespresso',
+        name: '21K Nespresso',
+        short: '21K',
+        raceDate: '2026-04-19',
+        location: 'Parc Jean-Drapeau',
+        type: 'Half Marathon',
+        color: '#e8811a',
+        potential: false,
+        training: { start: '2026-01-26', end: '2026-04-18' }
+      },
+      {
+        id: 'hyrox',
+        name: 'Hyrox Ottawa',
+        short: 'HYROX',
+        raceDate: '2026-05-14',
+        location: 'EY Centre, Ottawa',
+        type: 'Hyrox',
+        color: '#2e9e5a',
+        potential: false,
+        training: { start: '2026-03-02', end: '2026-05-13' }
+      },
+      {
+        id: 'sail',
+        name: 'SAIL Esprit Montréal',
+        short: 'SAIL',
+        raceDate: '2026-09-12',
+        location: 'Parc Jean-Drapeau',
+        type: 'Olympic Tri',
+        color: '#d63384',
+        potential: false,
+        training: { start: '2026-07-06', end: '2026-09-11' }
+      },
+      {
+        id: 'beirut',
+        name: 'Beirut Marathon',
+        short: 'BEIRUT',
+        raceDate: '2026-11-29',
+        location: 'Beirut, Lebanon',
+        type: 'Marathon',
+        color: '#7c4dff',
+        potential: true,
+        training: { start: '2026-07-27', end: '2026-11-28' }
+      },
+    ];
+
+    function dayOfYear(ds) {
+      const d = new Date(ds + 'T00:00:00');
+      return Math.floor((d - new Date(YEAR,0,1)) / 86400000);
+    }
+
+    function pct(days) { return (days / TOTAL_DAYS) * 100; }
+
+    function fmtDate(ds) {
+      return new Date(ds+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    }
+
+    function fmtDateFull(ds) {
+      return new Date(ds+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+    }
+
+    function weeks(s, e) {
+      return Math.round((new Date(e+'T00:00:00') - new Date(s+'T00:00:00')) / 604800000);
+    }
+
+    function hexAlpha(hex, a) {
+      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    const todayStr = (() => {
+      const t = new Date();
+      return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+    })();
+    const todayDoy = dayOfYear(todayStr);
+    const todayMonth = new Date().getMonth();
+
+    // Legend
+    function renderLegend() {
+      const el = document.getElementById('legend');
+      el.innerHTML = `
+        <div class="legend-section">
+          <span class="legend-section-label">70.3 Phases</span>
+          <div class="legend-item"><div class="legend-bar" style="background:var(--c-base)"></div>Base</div>
+          <div class="legend-item"><div class="legend-bar" style="background:var(--c-build)"></div>Build</div>
+          <div class="legend-item"><div class="legend-bar" style="background:var(--c-peak)"></div>Peak</div>
+          <div class="legend-item"><div class="legend-bar" style="background:var(--c-taper)"></div>Taper</div>
+        </div>
+        <div class="legend-sep"></div>
+        <div class="legend-section">
+          <span class="legend-section-label">Events</span>
+          ${events.map(ev =>
+            `<div class="legend-item"><div class="legend-bar" style="background:${ev.color};border-radius:50%;width:8px;height:8px;${ev.potential?'background:transparent;border:1.5px dashed '+ev.color:''}"></div>${ev.short}</div>`
+          ).join('')}
+        </div>
+      `;
+    }
+
+    function renderTimeline() {
+      const tl = document.getElementById('timeline');
+
+      // Month strip
+      const mStrip = document.createElement('div');
+      mStrip.className = 'month-strip';
+      MONTHS.forEach((m, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'month-cell' + (i === todayMonth ? ' has-today' : '');
+        cell.textContent = m;
+        cell.style.width = pct(DAYS_IN_MONTH[i]) + '%';
+        mStrip.appendChild(cell);
+      });
+      tl.appendChild(mStrip);
+
+      // Week tick strip
+      const wStrip = document.createElement('div');
+      wStrip.className = 'week-strip';
+      // Add a tick every Monday
+      const jan1Day = new Date(YEAR, 0, 1).getDay(); // 0=Sun
+      let firstMon = jan1Day === 1 ? 0 : (jan1Day === 0 ? 1 : 8 - jan1Day);
+      for (let d = firstMon; d < TOTAL_DAYS; d += 7) {
+        const tick = document.createElement('div');
+        tick.className = 'week-tick';
+        tick.style.left = pct(d) + '%';
+        wStrip.appendChild(tick);
+      }
+      tl.appendChild(wStrip);
+
+      // Event rows
+      const body = document.createElement('div');
+      body.className = 'timeline-body';
+
+      events.forEach(ev => {
+        const row = document.createElement('div');
+        row.className = 'event-row';
+
+        // Label
+        const label = document.createElement('div');
+        label.className = 'event-label';
+        label.innerHTML = `
+          <div class="ev-name" style="color:${ev.color}">${ev.name}</div>
+          <div class="ev-meta">
+            <span>${fmtDate(ev.raceDate)}</span>
+            <span class="ev-type">${ev.type}</span>
+            ${ev.potential ? `<span class="badge" style="color:${ev.color};border-color:${ev.color}">TBD</span>` : ''}
+          </div>
+        `;
+        row.appendChild(label);
+
+        // Track
+        const track = document.createElement('div');
+        track.className = 'event-track';
+
+        // Grid lines at month boundaries
+        let cum = 0;
+        for (let i = 0; i < 11; i++) {
+          cum += DAYS_IN_MONTH[i];
+          const gl = document.createElement('div');
+          gl.className = 'grid-line';
+          gl.style.left = pct(cum) + '%';
+          track.appendChild(gl);
+        }
+
+        // 70.3 phases
+        if (ev.phases) {
+          ev.phases.forEach(phase => {
+            const sDay = dayOfYear(phase.start);
+            const dur = dayOfYear(phase.end) - sDay + 1;
+            const bar = document.createElement('div');
+            bar.className = 'phase-bar';
+            bar.style.left = pct(sDay) + '%';
+            bar.style.width = pct(dur) + '%';
+            bar.style.background = phase.bg;
+            if (dur > 14) {
+              bar.innerHTML = `<span class="plabel">${phase.name}</span>`;
+            }
+            bar.dataset.tt = `<div class="tt-title" style="color:${ev.color}">${ev.short} — ${phase.name}</div><div class="tt-dim">${fmtDate(phase.start)} → ${fmtDate(phase.end)} · ${weeks(phase.start, phase.end)}w</div>`;
+            bar.addEventListener('mouseenter', showTT);
+            bar.addEventListener('mousemove', moveTT);
+            bar.addEventListener('mouseleave', hideTT);
+            track.appendChild(bar);
+          });
+        }
+
+        // Training bar
+        if (ev.training) {
+          const sDay = dayOfYear(ev.training.start);
+          const dur = dayOfYear(ev.training.end) - sDay + 1;
+          const bar = document.createElement('div');
+          bar.className = 'training-bar';
+          bar.style.left = pct(sDay) + '%';
+          bar.style.width = pct(dur) + '%';
+          bar.style.background = hexAlpha(ev.color, 0.12);
+          bar.style.color = ev.color;
+          if (ev.potential) {
+            bar.style.background = 'transparent';
+            bar.style.border = `1.5px dashed ${hexAlpha(ev.color, 0.3)}`;
+          }
+          if (dur > 25) {
+            bar.innerHTML = `<span class="tlabel">training</span>`;
+          }
+          bar.dataset.tt = `<div class="tt-title" style="color:${ev.color}">${ev.name}</div><div class="tt-dim">Training: ${fmtDate(ev.training.start)} → ${fmtDate(ev.training.end)} · ${weeks(ev.training.start, ev.training.end)}w</div>`;
+          bar.addEventListener('mouseenter', showTT);
+          bar.addEventListener('mousemove', moveTT);
+          bar.addEventListener('mouseleave', hideTT);
+          track.appendChild(bar);
+        }
+
+        // Race dot
+        const rd = dayOfYear(ev.raceDate);
+        const dot = document.createElement('div');
+        dot.className = 'race-dot' + (ev.potential ? ' potential' : '');
+        dot.style.left = pct(rd) + '%';
+        dot.style.background = ev.color;
+        if (ev.potential) dot.style.borderColor = ev.color;
+        dot.dataset.tt = `<div class="tt-title" style="color:${ev.color}">${ev.name}</div><strong>${fmtDateFull(ev.raceDate)}</strong><br><span class="tt-dim">${ev.location} · ${ev.type}${ev.potential ? '<br><em>Potential entry</em>' : ''}</span>`;
+        dot.addEventListener('mouseenter', showTT);
+        dot.addEventListener('mousemove', moveTT);
+        dot.addEventListener('mouseleave', hideTT);
+        track.appendChild(dot);
+
+        // Today line
+        if (todayDoy >= 0 && todayDoy < TOTAL_DAYS) {
+          const tl = document.createElement('div');
+          tl.className = 'today-line';
+          tl.style.left = pct(todayDoy) + '%';
+          track.appendChild(tl);
+        }
+
+        row.appendChild(track);
+        body.appendChild(row);
+      });
+
+      tl.appendChild(body);
+
+      // Today label (once, in month strip)
+      const todayLabel = document.createElement('div');
+      todayLabel.className = 'today-label';
+      todayLabel.textContent = `Today · ${fmtDate(todayStr)}`;
+      todayLabel.style.left = pct(todayDoy) + '%';
+      mStrip.appendChild(todayLabel);
+      // Today line through month strip
+      const todayLineHeader = document.createElement('div');
+      todayLineHeader.className = 'today-line';
+      todayLineHeader.style.left = pct(todayDoy) + '%';
+      todayLineHeader.style.top = '0';
+      todayLineHeader.style.bottom = '0';
+      todayLineHeader.style.position = 'absolute';
+      mStrip.style.position = 'relative';
+      mStrip.appendChild(todayLineHeader);
+    }
+
+    // Tooltip
+    const tooltip = document.getElementById('tooltip');
+    function showTT(e) {
+      tooltip.innerHTML = e.currentTarget.dataset.tt;
+      tooltip.classList.add('visible');
+    }
+    function moveTT(e) {
+      const x = Math.min(e.clientX + 14, window.innerWidth - tooltip.offsetWidth - 16);
+      const y = Math.min(e.clientY + 14, window.innerHeight - tooltip.offsetHeight - 16);
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+    function hideTT() { tooltip.classList.remove('visible'); }
+
+    // Touch
+    if ('ontouchstart' in window) {
+      document.addEventListener('touchstart', (e) => {
+        const t = e.target.closest('.phase-bar,.training-bar,.race-dot');
+        if (t) {
+          showTT({ currentTarget: t });
+          moveTT({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+        } else {
+          hideTT();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLegend();
+      renderTimeline();
+    });
+  </script>
+</body>
+</html>
