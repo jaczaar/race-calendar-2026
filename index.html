@@ -20,16 +20,17 @@
       --text-faint: #aaa;
       --today-ring: #e63946;
 
-      --c-tremblant: #2196f3;
-      --c-nespresso: #e8811a;
-      --c-hyrox: #2e9e5a;
-      --c-sail: #d63384;
-      --c-beirut: #7c4dff;
+      --c-tremblant: #1976d2;
+      --c-nespresso: #e65100;
+      --c-hyrox: #2e7d32;
+      --c-sail: #c2185b;
+      --c-beirut: #8e24aa;
 
-      --c-base: #a8bde0;
-      --c-build: #5a6fc8;
-      --c-peak: #2a3da8;
-      --c-taper: #43a047;
+      /* 70.3 phases — shades of Tremblant blue (light → dark) */
+      --c-base: #bbdefb;
+      --c-build: #64b5f6;
+      --c-peak: #1565c0;
+      --c-taper: #0d47a1;
 
       --label-w: 32px;
       --grid-pad: 6px;
@@ -448,19 +449,19 @@
     const MONTHS_LETTER = ['J','F','M','A','M','J','J','A','S','O','N','D'];
     const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 
-    // Training colors — boosted opacity for vivid distinction
+    // Training colors — lighter shades of each event's race color
     const TRAINING_COLORS = {
       tremblant: null,
-      nespresso: 'rgba(232,129,26,0.55)',
-      hyrox:     'rgba(46,158,90,0.55)',
-      sail:      'rgba(214,51,132,0.50)',
-      beirut:    'rgba(124,77,255,0.40)',
+      nespresso: '#ffab91',
+      hyrox:     '#81c784',
+      sail:      '#f48fb1',
+      beirut:    '#ce93d8',
     };
 
     const events = [
       {
         id: 'tremblant', name: 'Ironman 70.3 Tremblant', short: '70.3',
-        raceDate: '2026-06-21', color: '#2196f3', potential: false,
+        raceDate: '2026-06-21', color: '#1976d2', potential: false,
         location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
         phases: [
           { name: 'Base',  start: '2026-01-21', end: '2026-04-12', color: 'var(--c-base)' },
@@ -471,27 +472,27 @@
       },
       {
         id: 'nespresso', name: '21K Nespresso', short: '21K',
-        raceDate: '2026-04-19', color: '#e8811a', potential: false,
+        raceDate: '2026-04-19', color: '#e65100', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Half Marathon',
         training: { start: '2026-01-26', end: '2026-04-18' }
       },
       {
         id: 'hyrox', name: 'Hyrox Ottawa', short: 'HYR',
-        raceDate: '2026-05-14', color: '#2e9e5a', potential: false,
+        raceDate: '2026-05-14', color: '#2e7d32', potential: false,
         location: 'EY Centre, Ottawa', type: 'Hyrox',
         training: { start: '2026-03-02', end: '2026-05-13' }
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
-        raceDate: '2026-09-12', color: '#d63384', potential: false,
+        raceDate: '2026-09-12', color: '#c2185b', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Olympic Tri',
         training: { start: '2026-07-06', end: '2026-09-11' }
       },
       {
         id: 'beirut', name: 'Beirut Marathon', short: 'BEI',
-        raceDate: '2026-11-29', color: '#7c4dff', potential: true,
+        raceDate: '2026-11-29', color: '#8e24aa', potential: true,
         location: 'Beirut, Lebanon', type: 'Marathon',
-        training: { start: '2026-07-27', end: '2026-11-28' }
+        training: { start: '2026-09-01', end: '2026-11-28' }
       },
     ];
 
@@ -625,14 +626,12 @@
                 cell.style.color = info.raceEv.color;
               }
             } else if (info.colors.length > 0) {
-              const unique = [];
-              const seen = new Set();
+              // Deduplicate, keeping last occurrence per event (most recent on top)
+              const byId = new Map();
               for (const c of info.colors) {
-                if (!seen.has(c.id)) {
-                  seen.add(c.id);
-                  unique.push(c.color);
-                }
+                byId.set(c.id, c.color);
               }
+              const unique = [...byId.values()].reverse();
 
               if (unique.length === 1) {
                 cell.style.background = unique[0];
@@ -679,24 +678,15 @@
         <div class="legend-section">
           <div class="legend-section-title">Races</div>
           <div class="legend-row">
-            ${events.map(ev => `
+            ${events.map(ev => {
+              const trainingColor = ev.phases ? 'var(--c-build)' : TRAINING_COLORS[ev.id];
+              return `
               <div class="legend-item">
                 <div class="legend-swatch circle ${ev.potential ? 'dashed' : ''}" style="background:${ev.color};${ev.potential ? 'border-color:'+ev.color : ''}"></div>
+                <div class="legend-swatch" style="background:${trainingColor}"></div>
                 ${ev.short} <span class="race-date">${shortDate(ev.raceDate)}</span>
               </div>
-            `).join('')}
-          </div>
-        </div>
-        <div class="legend-section">
-          <div class="legend-section-title">70.3 Phases</div>
-          <div class="legend-row">
-            <div class="legend-item"><div class="legend-swatch" style="background:var(--c-base)"></div>Base</div>
-            <div class="legend-item"><div class="legend-swatch" style="background:var(--c-build)"></div>Build</div>
-            <div class="legend-item"><div class="legend-swatch" style="background:var(--c-peak)"></div>Peak</div>
-            <div class="legend-item"><div class="legend-swatch" style="background:var(--c-taper)"></div>Taper</div>
-            ${events.filter(ev => ev.training).map(ev => `
-              <div class="legend-item"><div class="legend-swatch" style="background:${TRAINING_COLORS[ev.id]}"></div>${ev.short}</div>
-            `).join('')}
+            `}).join('')}
           </div>
         </div>
         <div class="legend-section">
@@ -704,7 +694,7 @@
             <div class="legend-item legend-today"><div class="legend-today-swatch"></div>Today</div>
             <div class="legend-item">
               <div class="legend-swatch overlap-demo">
-                <div class="half" style="background:var(--c-build)"></div>
+                <div class="half" style="background:${TRAINING_COLORS.hyrox}"></div>
                 <div class="half" style="background:${TRAINING_COLORS.nespresso}"></div>
               </div>
               Overlap
