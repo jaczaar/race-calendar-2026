@@ -6,543 +6,422 @@
   <title>2026 Race Year</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #f5f4f1;
-      --cell-empty: transparent;
-      --cell-default: #ddd9d2;
-      --cell-past: #e8e6e1;
-      --text: #1a1a1a;
-      --text-dim: #777;
-      --text-faint: #aaa;
-      --today-ring: #e63946;
-
-      --c-tremblant: #1976d2;
-      --c-nespresso: #e65100;
-      --c-hyrox: #2e7d32;
-      --c-sail: #c2185b;
-      --c-beirut: #8e24aa;
-
-      /* 70.3 phases — shades of Tremblant blue (light → dark) */
-      --c-base: #bbdefb;
-      --c-build: #64b5f6;
-      --c-peak: #1565c0;
-      --c-taper: #0d47a1;
-
-      --label-w: 32px;
-      --grid-pad: 6px;
+      --bg: #fff;
+      --surface: #fff;
+      --cell: #f0f0f2;
+      --text: #1a1a1e;
+      --text-mid: #6b6b76;
+      --text-dim: #b0b0b8;
+      --line: #e8e8ec;
+      --today: #e03040;
+      --label-w: 38px;
     }
+
+    html, body { height: 100%; }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      min-height: 100dvh;
       display: flex;
-      justify-content: center;
-      padding: 1.5rem var(--grid-pad) 2rem;
-      -webkit-tap-highlight-color: transparent;
-      overflow-x: hidden;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 40px;
+      gap: 24px;
     }
 
-    .page {
-      width: 100%;
-      max-width: 860px;
-    }
-
+    /* ── Header ── */
     header {
-      text-align: center;
-      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 1800px;
     }
 
     header h1 {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 2.4rem;
-      letter-spacing: 0.02em;
-      color: var(--text);
-      line-height: 1;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: -0.01em;
     }
 
-    header h1 span {
-      color: var(--text-faint);
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.15em;
+    header h1 em {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      display: block;
-      margin-top: 0.2rem;
-    }
-
-    /* ── Year Grid ── */
-    .year-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5px;
-    }
-
-    .month-row {
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-
-    .month-label {
-      font-size: 0.55rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
       color: var(--text-dim);
-      width: var(--label-w);
-      flex-shrink: 0;
-      text-align: right;
-      padding-right: 4px;
+      margin-left: 8px;
     }
 
-    .month-label.has-today { color: var(--today-ring); font-weight: 800; }
-
-    .month-days {
-      display: grid;
-      grid-template-columns: repeat(31, 1fr);
-      gap: 1.5px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    /* Day number header */
-    .day-nums-row {
+    .legend {
       display: flex;
       align-items: center;
-      gap: 0;
-      margin-bottom: 3px;
+      gap: 14px;
     }
 
-    .day-nums-row .spacer {
-      width: var(--label-w);
-      flex-shrink: 0;
-    }
-
-    .day-nums-row .nums {
-      display: grid;
-      grid-template-columns: repeat(31, 1fr);
-      gap: 1.5px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .day-num {
-      text-align: center;
-      font-size: 0.45rem;
-      color: var(--text-faint);
+    .lg {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.62rem;
       font-weight: 600;
+      color: var(--text-mid);
     }
 
-    .day-num.dim { visibility: hidden; }
-
-    .day {
-      aspect-ratio: 1;
-      border-radius: 3px;
-      background: var(--cell-default);
-      position: relative;
-      cursor: default;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0;
-      min-width: 0;
-    }
-
-    .day:hover {
-      transform: scale(1.8);
-      z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.22);
-    }
-
-    .day.empty {
-      background: transparent;
-      pointer-events: none;
-    }
-
-    /* ── Past / Today / Future ── */
-    .day.past {
-      opacity: 0.33;
-    }
-
-    .day.past:hover {
-      opacity: 0.8;
-    }
-
-    .day.today {
-      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring);
-      z-index: 6;
-      opacity: 1 !important;
-      border-radius: 3px;
-    }
-
-    .day.today:hover {
-      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring), 0 2px 8px rgba(0,0,0,0.22);
-    }
-
-    /* ── Race Days ── */
-    .day.race {
-      border-radius: 50%;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-      z-index: 7;
-      opacity: 1 !important;
-    }
-
-    .day.race:hover {
-      transform: scale(2);
-    }
-
-    .day.race.potential-race {
-      background: rgba(255,255,255,0.7) !important;
-      border: 2px dashed;
-    }
-
-    .day.race::before {
-      content: attr(data-short);
-      position: absolute;
-      font-size: 0.32rem;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      pointer-events: none;
-    }
-
-    .day.race.potential-race::before {
-      color: inherit;
-    }
-
-    /* ── Overlap: HORIZONTAL split (top/bottom) ── */
-    .day.overlap-2 {
-      background: none !important;
-      overflow: hidden;
-    }
-    .day.overlap-2 .half {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 50%;
-    }
-    .day.overlap-2 .half:first-child {
-      top: 0;
-      border-radius: 3px 3px 0 0;
-    }
-    .day.overlap-2 .half:last-child {
-      bottom: 0;
-      border-radius: 0 0 3px 3px;
-    }
-
-    .day.overlap-3 {
-      background: none !important;
-      overflow: hidden;
-    }
-    .day.overlap-3 .third {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 33.33%;
-    }
-    .day.overlap-3 .third:nth-child(1) {
-      top: 0;
-      border-radius: 3px 3px 0 0;
-    }
-    .day.overlap-3 .third:nth-child(2) {
-      top: 33.33%;
-    }
-    .day.overlap-3 .third:nth-child(3) {
-      bottom: 0;
-      border-radius: 0 0 3px 3px;
-    }
-
-    /* ── Tooltip ── */
-    .tooltip {
-      position: fixed;
-      background: #222;
-      color: #fff;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 5px 9px;
-      border-radius: 6px;
-      white-space: pre;
-      pointer-events: none;
-      z-index: 100;
-      line-height: 1.45;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      opacity: 0;
-      transition: opacity 0.12s;
-    }
-
-    .tooltip.visible { opacity: 1; }
-
-    /* ── Legend: compact ── */
-    .legend-wrap {
-      margin-top: 1.5rem;
-      padding: 0 4px;
-    }
-
-    .legend-section {
-      margin-bottom: 0.6rem;
-    }
-
-    .legend-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .legend-section-title {
-      font-size: 0.5rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-faint);
-      margin-bottom: 0.25rem;
-    }
-
-    .legend-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem 0.8rem;
-      align-items: center;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      font-size: 0.6rem;
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-
-    .legend-item .race-date {
-      color: var(--text-faint);
-      font-size: 0.52rem;
-      font-weight: 500;
-    }
-
-    .legend-swatch {
+    .lg .d {
       width: 10px;
       height: 10px;
       border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .legend-swatch.circle {
-      border-radius: 50%;
-    }
-
-    .legend-swatch.dashed {
-      background: rgba(255,255,255,0.7) !important;
+    .lg .d.dashed {
+      background: transparent !important;
       border: 1.5px dashed;
     }
 
-    .legend-swatch.overlap-demo {
-      overflow: hidden;
+    .lg .tbc { font-size: 0.5rem; color: var(--text-dim); font-weight: 500; }
+
+    /* ── Grid ── */
+    .grid-wrap {
+      width: 100%;
+      max-width: 1800px;
+    }
+
+    .year-grid {
       display: flex;
       flex-direction: column;
-    }
-    .legend-swatch.overlap-demo .half {
-      width: 100%;
-      height: 50%;
-    }
-    .legend-swatch.overlap-demo .half:first-child {
-      border-radius: 2px 2px 0 0;
-    }
-    .legend-swatch.overlap-demo .half:last-child {
-      border-radius: 0 0 2px 2px;
+      gap: 6px;
     }
 
-    /* ── Today marker in legend ── */
-    .legend-today {
-      display: inline-flex;
+    /* Day numbers header */
+    .dhdr {
+      display: flex;
+      height: 22px;
+      flex-shrink: 0;
+      margin-bottom: 4px;
+    }
+
+    .dhdr .sp { width: var(--label-w); flex-shrink: 0; }
+
+    .dhdr .nums {
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 6px;
+      flex: 1;
+    }
+
+    .dn {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-size: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      padding-bottom: 2px;
+    }
+
+    .dn.vis { color: var(--text-mid); }
+    .dn:not(.vis) { visibility: hidden; }
+
+    .dn.td-col {
+      color: var(--today) !important;
+      visibility: visible !important;
+      font-weight: 800;
+    }
+
+    /* Month rows */
+    .mr {
+      display: flex;
+      gap: 0;
+    }
+
+    .ml {
+      width: var(--label-w);
+      flex-shrink: 0;
+      display: flex;
       align-items: center;
-      gap: 0.25rem;
-    }
-    .legend-today-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      background: var(--cell-default);
-      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1px var(--today-ring);
-    }
-
-    /* ── Responsive: large screens ── */
-    @media (min-width: 700px) {
-      body { padding: 2rem 1.5rem 3rem; }
-      header h1 { font-size: 3rem; }
-      header { margin-bottom: 1.8rem; }
-      :root {
-        --label-w: 36px;
-        --grid-pad: 16px;
-      }
-      .year-grid { gap: 2px; }
-      .month-days { gap: 2px; }
-      .day-nums-row .nums { gap: 2px; }
-      .month-label { font-size: 0.65rem; padding-right: 6px; }
-      .day-num { font-size: 0.5rem; }
-      .day { border-radius: 4px; }
-      .day.today { border-radius: 4px; }
-      .day.overlap-2 .half:first-child { border-radius: 4px 4px 0 0; }
-      .day.overlap-2 .half:last-child { border-radius: 0 0 4px 4px; }
-      .day.overlap-3 .third:nth-child(1) { border-radius: 4px 4px 0 0; }
-      .day.overlap-3 .third:nth-child(3) { border-radius: 0 0 4px 4px; }
-      .legend-item { font-size: 0.68rem; }
-      .legend-swatch { width: 12px; height: 12px; }
-      .legend-today-swatch { width: 12px; height: 12px; }
+      justify-content: flex-end;
+      padding-right: 10px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
     }
 
-    /* ── Responsive: small mobile ── */
-    @media (max-width: 380px) {
-      :root {
-        --label-w: 22px;
-        --grid-pad: 3px;
-      }
-      body { padding: 1rem var(--grid-pad) 1.5rem; }
-      header h1 { font-size: 1.6rem; }
-      header h1 span { font-size: 0.7rem; }
-      .month-label { font-size: 0.42rem; letter-spacing: 0; padding-right: 2px; }
-      .day-num { font-size: 0.35rem; }
-      .day.race::before { font-size: 0.25rem; }
+    .ml.now { color: var(--today); font-weight: 800; }
+
+    .md {
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 6px;
+      flex: 1;
     }
 
-    /* Larger tap target on touch */
+    /* ── Cells ── */
+    .c {
+      aspect-ratio: 1;
+      background: var(--cell);
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      cursor: default;
+    }
+
+    .c:hover { z-index: 10; filter: brightness(0.92); }
+    .c.x { background: transparent; pointer-events: none; }
+    .c.past { opacity: 0.45; }
+    .c.past:hover { opacity: 0.75; }
+
+    /* Today */
+    .c.today {
+      z-index: 8;
+      opacity: 1 !important;
+      box-shadow: 0 0 0 3.5px var(--today);
+    }
+
+    /* Overlap splits */
+    .c.o2 { background: none !important; overflow: hidden; }
+    .c.o2 .h { position: absolute; left: 0; right: 0; height: 50%; border-radius: 0; }
+    .c.o2 .h:first-child { top: 0; border-radius: 3px 3px 0 0; }
+    .c.o2 .h:last-child { bottom: 0; border-radius: 0 0 3px 3px; }
+
+    .c.o3 { background: none !important; overflow: hidden; }
+    .c.o3 .h { position: absolute; left: 0; right: 0; height: 33.33%; border-radius: 0; }
+    .c.o3 .h:nth-child(1) { top: 0; border-radius: 3px 3px 0 0; }
+    .c.o3 .h:nth-child(2) { top: 33.33%; }
+    .c.o3 .h:nth-child(3) { bottom: 0; border-radius: 0 0 3px 3px; }
+
+    /* Race badge */
+    .c.race {
+      overflow: visible;
+      z-index: 15;
+      opacity: 1 !important;
+    }
+
+    .b {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 16;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+
+    .b span {
+      font-size: 0.44rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .b.pot {
+      background: var(--surface) !important;
+      border: 2px dashed;
+      box-shadow: none;
+    }
+
+    .b.pot span { color: inherit; }
+
+    .c.race:hover .b {
+      transform: translate(-50%, -50%) scale(1.12);
+      transition: transform 0.12s;
+    }
+
+    /* Tooltip */
+    .tip {
+      position: fixed;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 0.68rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: 200;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      opacity: 0;
+      transition: opacity 0.1s;
+      max-width: 260px;
+    }
+
+    .tip.on { opacity: 1; }
+
+    .tip-date {
+      font-size: 0.54rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 3px;
+    }
+
+    .tip-ev {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .tip-ev .td {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .tip-rn { font-weight: 700; font-size: 0.7rem; }
+    .tip-m { font-size: 0.54rem; color: var(--text-dim); margin-top: 1px; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      :root { --label-w: 28px; }
+      body { padding: 20px; }
+      .ml { font-size: 0.52rem; padding-right: 6px; }
+      .b { width: 20px; height: 20px; }
+      .b span { font-size: 0.28rem; }
+    }
+
+    @media (max-width: 500px) {
+      :root { --label-w: 22px; }
+      body { padding: 14px; gap: 14px; }
+      header h1 { font-size: 1rem; }
+      header h1 em { display: none; }
+      .lg .tbc { display: none; }
+      .ml { font-size: 0.44rem; padding-right: 4px; }
+      .dn { font-size: 0.36rem; }
+      .b { width: 15px; height: 15px; }
+      .b span { font-size: 0.22rem; }
+    }
+
     @media (hover: none) {
-      .day::after {
-        content: '';
-        position: absolute;
-        inset: -2px;
-      }
-      .day:hover {
-        transform: none;
-        box-shadow: none;
-      }
-      .day.race:hover {
-        transform: none;
-      }
-      .day.today:hover {
-        box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring);
-      }
+      .c:hover { filter: none; }
+      .c.race:hover .b { transform: translate(-50%, -50%); }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <h1>2026 <span>Race Year</span></h1>
-    </header>
+  <header>
+    <h1>2026<em>Race Year</em></h1>
+    <div class="legend" id="legend"></div>
+  </header>
+  <div class="grid-wrap">
     <div class="year-grid" id="grid"></div>
-    <div class="legend-wrap" id="legend"></div>
-    <div class="tooltip" id="tooltip"></div>
+    <div class="tip" id="tip"></div>
   </div>
 
   <script>
     const YEAR = 2026;
-    const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const MONTHS_LETTER = ['J','F','M','A','M','J','J','A','S','O','N','D'];
-    const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
-
-    // Training colors — lighter shades of each event's race color
-    const TRAINING_COLORS = {
-      tremblant: null,
-      nespresso: '#ffab91',
-      hyrox:     '#81c784',
-      sail:      '#f48fb1',
-      beirut:    '#ce93d8',
-    };
+    const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DIM = [31,28,31,30,31,30,31,31,30,31,30,31];
+    const WDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
     const events = [
       {
-        id: 'tremblant', name: 'Ironman 70.3 Tremblant', short: '70.3',
-        raceDate: '2026-06-21', color: '#1976d2', potential: false,
+        id: '703', name: 'Ironman 70.3 Tremblant', short: '70.3',
+        raceDate: '2026-06-21', hex: '#1a8a9a', potential: false,
         location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
         phases: [
-          { name: 'Base',  start: '2026-01-21', end: '2026-04-12', color: 'var(--c-base)' },
-          { name: 'Build', start: '2026-04-13', end: '2026-05-31', color: 'var(--c-build)' },
-          { name: 'Peak',  start: '2026-06-01', end: '2026-06-14', color: 'var(--c-peak)' },
-          { name: 'Taper', start: '2026-06-15', end: '2026-06-20', color: 'var(--c-taper)' },
+          { name: 'Base',  start: '2026-01-21', end: '2026-04-12' },
+          { name: 'Build', start: '2026-04-13', end: '2026-05-31' },
+          { name: 'Peak',  start: '2026-06-01', end: '2026-06-14' },
+          { name: 'Taper', start: '2026-06-15', end: '2026-06-20' },
         ]
       },
       {
-        id: 'nespresso', name: '21K Nespresso', short: '21K',
-        raceDate: '2026-04-19', color: '#e65100', potential: false,
+        id: '21k', name: '21K Nespresso', short: '21K',
+        raceDate: '2026-04-19', hex: '#e86b5a', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Half Marathon',
         training: { start: '2026-01-26', end: '2026-04-18' }
       },
       {
-        id: 'hyrox', name: 'Hyrox Ottawa', short: 'HYR',
-        raceDate: '2026-05-14', color: '#2e7d32', potential: false,
+        id: 'hyr', name: 'Hyrox Ottawa', short: 'HYR',
+        raceDate: '2026-05-14', hex: '#c45e10', potential: false,
         location: 'EY Centre, Ottawa', type: 'Hyrox',
         training: { start: '2026-03-02', end: '2026-05-13' }
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
-        raceDate: '2026-09-12', color: '#c2185b', potential: false,
+        raceDate: '2026-09-12', hex: '#d63060', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Olympic Tri',
         training: { start: '2026-07-06', end: '2026-09-11' }
       },
       {
-        id: 'beirut', name: 'Beirut Marathon', short: 'BEI',
-        raceDate: '2026-11-29', color: '#8e24aa', potential: true,
+        id: 'bei', name: 'Beirut Marathon', short: 'BEI',
+        raceDate: '2026-11-29', hex: '#8860d0', potential: true,
         location: 'Beirut, Lebanon', type: 'Marathon',
         training: { start: '2026-09-01', end: '2026-11-28' }
       },
     ];
 
+    // Training fill = event hex so colors match exactly
+    events.forEach(ev => {
+      if (ev.phases) ev.phases.forEach(ph => { ph.fill = ev.hex; });
+      if (ev.training) ev.trainingFill = ev.hex;
+    });
+
     function ds(m, d) {
       return `${YEAR}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     }
-
     function parseD(s) { return new Date(s + 'T00:00:00'); }
 
-    function fmtDate(s) {
-      return parseD(s).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    }
-
-    function shortDate(s) {
-      return parseD(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-
-    // Build date map
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayStr = ds(today.getMonth(), today.getDate());
-    const todayMonth = today.getMonth();
+    const isCurrentYear = today.getFullYear() === YEAR;
+    const todayStr = isCurrentYear ? ds(today.getMonth(), today.getDate()) : '';
+    const todayMonth = isCurrentYear ? today.getMonth() : -1;
+    const todayDay = isCurrentYear ? today.getDate() : -1;
 
     const dateMap = {};
     for (let m = 0; m < 12; m++) {
-      for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
+      for (let d = 1; d <= DIM[m]; d++) {
         const key = ds(m, d);
-        const cellDate = parseD(key);
+        const cd = parseD(key);
         dateMap[key] = {
-          colors: [],
-          labels: [],
-          isRace: false,
-          raceEv: null,
+          layers: [],
+          races: [],
           isToday: key === todayStr,
-          isPast: cellDate < today
+          isPast: isCurrentYear ? cd < today : today.getFullYear() > YEAR,
+          tips: []
         };
       }
     }
 
-    // Fill phases (70.3)
     events.forEach(ev => {
+      const end = parseD(ev.raceDate);
+
       if (ev.phases) {
-        ev.phases.forEach(phase => {
-          let cur = parseD(phase.start);
-          const end = parseD(phase.end);
-          while (cur <= end) {
+        ev.phases.forEach(ph => {
+          let cur = parseD(ph.start);
+          const pe = parseD(ph.end);
+          while (cur <= pe) {
             const key = ds(cur.getMonth(), cur.getDate());
             if (dateMap[key]) {
-              dateMap[key].colors.push({ color: phase.color, id: ev.id });
-              dateMap[key].labels.push(`${ev.short} ${phase.name}`);
+              dateMap[key].layers.push({ fill: ph.fill, accent: ev.hex, id: ev.id, end });
+              dateMap[key].tips.push({ color: ev.hex, text: `${ev.short} ${ph.name}` });
             }
             cur.setDate(cur.getDate() + 1);
           }
@@ -551,120 +430,119 @@
 
       if (ev.training) {
         let cur = parseD(ev.training.start);
-        const end = parseD(ev.training.end);
-        while (cur <= end) {
+        const te = parseD(ev.training.end);
+        while (cur <= te) {
           const key = ds(cur.getMonth(), cur.getDate());
           if (dateMap[key]) {
-            dateMap[key].colors.push({ color: TRAINING_COLORS[ev.id], id: ev.id });
-            dateMap[key].labels.push(`${ev.name} training`);
+            dateMap[key].layers.push({ fill: ev.trainingFill, accent: ev.hex, id: ev.id, end });
+            dateMap[key].tips.push({ color: ev.hex, text: `${ev.short} Training` });
           }
           cur.setDate(cur.getDate() + 1);
         }
       }
 
       if (dateMap[ev.raceDate]) {
-        dateMap[ev.raceDate].isRace = true;
-        dateMap[ev.raceDate].raceEv = ev;
-        dateMap[ev.raceDate].labels.unshift(`${ev.name} — ${fmtDate(ev.raceDate)}`);
+        dateMap[ev.raceDate].races.push(ev);
+        dateMap[ev.raceDate].tips.unshift({
+          color: ev.hex, text: ev.name, bold: true,
+          meta: `${ev.type} · ${ev.location}`
+        });
       }
     });
+
+    Object.values(dateMap).forEach(i => i.layers.sort((a, b) => a.end - b.end));
 
     function renderGrid() {
       const grid = document.getElementById('grid');
 
-      // Day number header — show 1, 5, 10, 15, 20, 25, 30
-      const numRow = document.createElement('div');
-      numRow.className = 'day-nums-row';
-      const spacer = document.createElement('div');
-      spacer.className = 'spacer';
-      numRow.appendChild(spacer);
+      // Day header
+      const hdr = document.createElement('div');
+      hdr.className = 'dhdr';
+      const sp = document.createElement('div');
+      sp.className = 'sp';
+      hdr.appendChild(sp);
       const nums = document.createElement('div');
       nums.className = 'nums';
-      const showNums = new Set([1, 5, 10, 15, 20, 25, 30]);
+      const show = new Set([1, 5, 10, 15, 20, 25, 31]);
       for (let d = 1; d <= 31; d++) {
-        const num = document.createElement('div');
-        num.className = 'day-num' + (showNums.has(d) ? '' : ' dim');
-        num.textContent = d;
-        nums.appendChild(num);
+        const n = document.createElement('div');
+        n.className = 'dn';
+        if (show.has(d)) n.classList.add('vis');
+        if (d === todayDay && todayMonth >= 0) n.classList.add('td-col');
+        n.textContent = d;
+        nums.appendChild(n);
       }
-      numRow.appendChild(nums);
-      grid.appendChild(numRow);
+      hdr.appendChild(nums);
+      grid.appendChild(hdr);
 
-      // Month rows
       for (let m = 0; m < 12; m++) {
         const row = document.createElement('div');
-        row.className = 'month-row';
+        row.className = 'mr';
 
-        const label = document.createElement('div');
-        label.className = 'month-label' + (m === todayMonth ? ' has-today' : '');
-        label.textContent = MONTHS_SHORT[m];
-        row.appendChild(label);
+        const lbl = document.createElement('div');
+        lbl.className = 'ml' + (m === todayMonth ? ' now' : '');
+        lbl.textContent = MO[m];
+        row.appendChild(lbl);
 
         const days = document.createElement('div');
-        days.className = 'month-days';
+        days.className = 'md';
 
         for (let d = 1; d <= 31; d++) {
-          const cell = document.createElement('div');
-
-          if (d > DAYS_IN_MONTH[m]) {
-            cell.className = 'day empty';
+          const el = document.createElement('div');
+          if (d > DIM[m]) {
+            el.className = 'c x';
           } else {
             const key = ds(m, d);
             const info = dateMap[key];
-            cell.className = 'day';
+            el.className = 'c';
+            el.setAttribute('data-key', key);
+            if (info.isPast) el.classList.add('past');
+            if (info.isToday) el.classList.add('today');
 
-            if (info.isPast) cell.classList.add('past');
-            if (info.isToday) cell.classList.add('today');
+            // Deduplicate layers by event id
+            const byId = new Map();
+            for (const l of info.layers) {
+              if (!byId.has(l.id)) byId.set(l.id, l);
+            }
 
-            if (info.isRace) {
-              cell.classList.add('race');
-              cell.style.background = info.raceEv.color;
-              cell.setAttribute('data-short', info.raceEv.short);
-              if (info.raceEv.potential) {
-                cell.classList.add('potential-race');
-                cell.style.borderColor = info.raceEv.color;
-                cell.style.color = info.raceEv.color;
+            if (info.races.length > 0) {
+              el.classList.add('race');
+              el.style.background = 'transparent';
+              const ev = info.races[0];
+              const b = document.createElement('div');
+              b.className = 'b' + (ev.potential ? ' pot' : '');
+              b.style.background = ev.hex;
+              if (ev.potential) {
+                b.style.borderColor = ev.hex;
+                b.style.color = ev.hex;
               }
-            } else if (info.colors.length > 0) {
-              // Deduplicate, keeping last occurrence per event (most recent on top)
-              const byId = new Map();
-              for (const c of info.colors) {
-                byId.set(c.id, c.color);
-              }
-              const unique = [...byId.values()].reverse();
-
-              if (unique.length === 1) {
-                cell.style.background = unique[0];
-              } else if (unique.length === 2) {
-                cell.classList.add('overlap-2');
-                const h1 = document.createElement('div');
-                h1.className = 'half';
-                h1.style.background = unique[0];
-                const h2 = document.createElement('div');
-                h2.className = 'half';
-                h2.style.background = unique[1];
-                cell.appendChild(h1);
-                cell.appendChild(h2);
-              } else {
-                cell.classList.add('overlap-3');
-                unique.slice(0, 3).forEach(color => {
-                  const t = document.createElement('div');
-                  t.className = 'third';
-                  t.style.background = color;
-                  cell.appendChild(t);
+              b.innerHTML = `<span>${ev.short}</span>`;
+              el.appendChild(b);
+            } else {
+              const u = [...byId.values()].sort((a, b) => (a.end || 0) - (b.end || 0));
+              if (u.length === 1) {
+                el.style.background = u[0].fill;
+              } else if (u.length === 2) {
+                el.classList.add('o2');
+                u.forEach(l => {
+                  const h = document.createElement('div');
+                  h.className = 'h';
+                  h.style.background = l.fill;
+                  el.appendChild(h);
+                });
+              } else if (u.length >= 3) {
+                el.classList.add('o3');
+                u.slice(0, 3).forEach(l => {
+                  const h = document.createElement('div');
+                  h.className = 'h';
+                  h.style.background = l.fill;
+                  el.appendChild(h);
                 });
               }
             }
-
-            // Build tooltip text
-            const labelParts = [`${MONTHS_SHORT[m]} ${d}`];
-            info.labels.forEach(l => labelParts.push(l));
-            cell.setAttribute('data-label', labelParts.join('\n'));
           }
-
-          days.appendChild(cell);
+          days.appendChild(el);
         }
-
         row.appendChild(days);
         grid.appendChild(row);
       }
@@ -672,103 +550,77 @@
 
     function renderLegend() {
       const el = document.getElementById('legend');
-      const phaseEl = events[0]; // tremblant has phases
-
-      el.innerHTML = `
-        <div class="legend-section">
-          <div class="legend-section-title">Races</div>
-          <div class="legend-row">
-            ${events.map(ev => {
-              const trainingColor = ev.phases ? 'var(--c-build)' : TRAINING_COLORS[ev.id];
-              return `
-              <div class="legend-item">
-                <div class="legend-swatch circle ${ev.potential ? 'dashed' : ''}" style="background:${ev.color};${ev.potential ? 'border-color:'+ev.color : ''}"></div>
-                <div class="legend-swatch" style="background:${trainingColor}"></div>
-                ${ev.short} <span class="race-date">${shortDate(ev.raceDate)}</span>
-              </div>
-            `}).join('')}
-          </div>
-        </div>
-        <div class="legend-section">
-          <div class="legend-row">
-            <div class="legend-item legend-today"><div class="legend-today-swatch"></div>Today</div>
-            <div class="legend-item">
-              <div class="legend-swatch overlap-demo">
-                <div class="half" style="background:${TRAINING_COLORS.hyrox}"></div>
-                <div class="half" style="background:${TRAINING_COLORS.nespresso}"></div>
-              </div>
-              Overlap
-            </div>
-            <div class="legend-item" style="opacity:0.33"><div class="legend-swatch" style="background:var(--c-base)"></div>Past</div>
-          </div>
-        </div>
-      `;
+      el.innerHTML = events.map(ev =>
+        `<div class="lg">
+          <div class="d ${ev.potential ? 'dashed' : ''}" style="background:${ev.hex};${ev.potential ? 'border-color:'+ev.hex+';background:transparent' : ''}"></div>
+          <span>${ev.short}</span>
+          ${ev.potential ? '<span class="tbc">tbc</span>' : ''}
+        </div>`
+      ).join('');
     }
 
-    // ── Tooltip system ──
     function setupTooltips() {
-      const tooltip = document.getElementById('tooltip');
+      const tip = document.getElementById('tip');
       const grid = document.getElementById('grid');
-      let activeCell = null;
-      const isTouchDevice = 'ontouchstart' in window;
+      let active = null;
+      const isTouch = 'ontouchstart' in window;
 
-      function showTooltip(cell) {
-        const label = cell.getAttribute('data-label');
-        if (!label) return;
-        activeCell = cell;
-        tooltip.textContent = label;
-        tooltip.classList.add('visible');
-        positionTooltip(cell);
-      }
+      function show(cell) {
+        const key = cell.getAttribute('data-key');
+        if (!key) return;
+        const info = dateMap[key];
+        if (!info) return;
+        active = cell;
+        const [,ms,ds2] = key.split('-');
+        const m = parseInt(ms) - 1, d = parseInt(ds2);
+        const dt = new Date(YEAR, m, d);
 
-      function hideTooltip() {
-        activeCell = null;
-        tooltip.classList.remove('visible');
-      }
-
-      function positionTooltip(cell) {
-        const rect = cell.getBoundingClientRect();
-        const tipRect = tooltip.getBoundingClientRect();
-        let left = rect.left + rect.width / 2 - tipRect.width / 2;
-        let top = rect.top - tipRect.height - 8;
-
-        if (left < 6) left = 6;
-        if (left + tipRect.width > window.innerWidth - 6) left = window.innerWidth - tipRect.width - 6;
-        if (top < 6) top = rect.bottom + 8;
-
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = top + 'px';
-      }
-
-      if (isTouchDevice) {
-        grid.addEventListener('touchstart', (e) => {
-          const cell = e.target.closest('.day:not(.empty)');
-          if (cell) {
-            e.preventDefault();
-            if (activeCell === cell) {
-              hideTooltip();
+        let html = `<div class="tip-date">${WDAY[dt.getDay()]}, ${MO[m]} ${d}</div>`;
+        if (!info.tips.length) {
+          html += `<div class="tip-ev" style="color:var(--text-dim)">Rest day</div>`;
+        } else {
+          info.tips.forEach(p => {
+            html += `<div class="tip-ev"><div class="td" style="background:${p.color}"></div>`;
+            if (p.bold) {
+              html += `<div><div class="tip-rn" style="color:${p.color}">${p.text}</div>`;
+              if (p.meta) html += `<div class="tip-m">${p.meta}</div>`;
+              html += `</div>`;
             } else {
-              showTooltip(cell);
+              html += `<span>${p.text}</span>`;
             }
-          } else {
-            hideTooltip();
-          }
-        }, { passive: false });
+            html += `</div>`;
+          });
+        }
+        tip.innerHTML = html;
+        tip.classList.add('on');
+        const r = cell.getBoundingClientRect();
+        const tr = tip.getBoundingClientRect();
+        let left = r.left + r.width / 2 - tr.width / 2;
+        let top = r.top - tr.height - 10;
+        if (left < 4) left = 4;
+        if (left + tr.width > window.innerWidth - 4) left = window.innerWidth - tr.width - 4;
+        if (top < 4) top = r.bottom + 10;
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+      }
 
-        document.addEventListener('touchstart', (e) => {
-          if (!e.target.closest('.year-grid') && !e.target.closest('.tooltip')) {
-            hideTooltip();
-          }
+      function hide() { active = null; tip.classList.remove('on'); }
+
+      if (isTouch) {
+        grid.addEventListener('touchstart', e => {
+          const cell = e.target.closest('.c:not(.x)');
+          if (cell) { e.preventDefault(); active === cell ? hide() : show(cell); }
+          else hide();
+        }, { passive: false });
+        document.addEventListener('touchstart', e => {
+          if (!e.target.closest('.year-grid') && !e.target.closest('.tip')) hide();
         });
       } else {
-        grid.addEventListener('mouseover', (e) => {
-          const cell = e.target.closest('.day:not(.empty)');
-          if (cell) showTooltip(cell);
+        grid.addEventListener('mouseover', e => {
+          const cell = e.target.closest('.c:not(.x)');
+          if (cell) show(cell);
         });
-        grid.addEventListener('mouseout', (e) => {
-          const cell = e.target.closest('.day');
-          if (cell) hideTooltip();
-        });
+        grid.addEventListener('mouseout', e => { if (e.target.closest('.c')) hide(); });
       }
     }
 
