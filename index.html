@@ -12,12 +12,12 @@
 
     :root {
       --bg: #f5f4f1;
-      --cell-empty: #eceae6;
-      --cell-default: #e3e1dc;
+      --cell-empty: transparent;
+      --cell-default: #ddd9d2;
+      --cell-past: #e8e6e1;
       --text: #1a1a1a;
       --text-dim: #777;
       --text-faint: #aaa;
-      --border: #ddd;
       --today-ring: #e63946;
 
       --c-tremblant: #2196f3;
@@ -26,14 +26,13 @@
       --c-sail: #d63384;
       --c-beirut: #7c4dff;
 
-      /* Improved phase colors: much more distinct from each other */
-      --c-base: #b8c9e8;
-      --c-build: #6a7fd2;
+      --c-base: #a8bde0;
+      --c-build: #5a6fc8;
       --c-peak: #2a3da8;
-      --c-taper: #4caf50;
+      --c-taper: #43a047;
 
-      --cell-size: 22px;
-      --cell-gap: 2px;
+      --label-w: 32px;
+      --grid-pad: 6px;
     }
 
     body {
@@ -41,26 +40,28 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
-      padding: 2rem 1.5rem 3rem;
+      padding: 1.5rem var(--grid-pad) 2rem;
       -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
 
     .page {
       width: 100%;
-      max-width: 960px;
+      max-width: 860px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.2rem;
     }
 
     header h1 {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: 3rem;
+      font-size: 2.4rem;
       letter-spacing: 0.02em;
       color: var(--text);
       line-height: 1;
@@ -69,43 +70,18 @@
     header h1 span {
       color: var(--text-faint);
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
       display: block;
-      margin-top: 0.3rem;
+      margin-top: 0.2rem;
     }
 
     /* ── Year Grid ── */
-    .grid-container {
-      position: relative;
-    }
-
     .year-grid {
       display: flex;
       flex-direction: column;
-      gap: 0;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* Scroll fade affordance on the right edge */
-    .grid-container::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 32px;
-      background: linear-gradient(to right, transparent, var(--bg));
-      pointer-events: none;
-      opacity: 1;
-      transition: opacity 0.3s;
-    }
-
-    .grid-container.scrolled-end::after {
-      opacity: 0;
+      gap: 1.5px;
     }
 
     .month-row {
@@ -115,135 +91,126 @@
     }
 
     .month-label {
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.06em;
       color: var(--text-dim);
-      width: 36px;
+      width: var(--label-w);
       flex-shrink: 0;
       text-align: right;
-      padding-right: 8px;
+      padding-right: 4px;
     }
 
     .month-label.has-today { color: var(--today-ring); font-weight: 800; }
 
     .month-days {
-      display: flex;
-      gap: var(--cell-gap);
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 1.5px;
+      flex: 1;
+      min-width: 0;
     }
 
-    /* Day number header row */
+    /* Day number header */
     .day-nums-row {
       display: flex;
       align-items: center;
       gap: 0;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .day-nums-row .spacer {
-      width: 36px;
+      width: var(--label-w);
       flex-shrink: 0;
     }
 
     .day-nums-row .nums {
-      display: flex;
-      gap: var(--cell-gap);
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 1.5px;
+      flex: 1;
+      min-width: 0;
     }
 
     .day-num {
-      width: var(--cell-size);
       text-align: center;
-      font-size: 0.55rem;
+      font-size: 0.45rem;
       color: var(--text-faint);
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    .day-num.dim { color: transparent; }
+    .day-num.dim { visibility: hidden; }
 
     .day {
-      width: var(--cell-size);
-      height: var(--cell-size);
-      border-radius: 4px;
+      aspect-ratio: 1;
+      border-radius: 3px;
       background: var(--cell-default);
       position: relative;
       cursor: default;
-      transition: transform 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0;
-      flex-shrink: 0;
+      min-width: 0;
     }
 
     .day:hover {
-      transform: scale(1.5);
+      transform: scale(1.8);
       z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.22);
     }
-
-    /* Tooltip — positioned via JS for tap and hover */
-    .tooltip {
-      position: fixed;
-      background: #222;
-      color: #fff;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 6px;
-      white-space: pre;
-      pointer-events: none;
-      z-index: 100;
-      line-height: 1.5;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-
-    .tooltip.visible { opacity: 1; }
 
     .day.empty {
       background: transparent;
       pointer-events: none;
     }
 
+    /* ── Past / Today / Future ── */
+    .day.past {
+      opacity: 0.33;
+    }
+
+    .day.past:hover {
+      opacity: 0.8;
+    }
+
     .day.today {
-      box-shadow: inset 0 0 0 2.5px var(--today-ring);
-      z-index: 5;
+      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring);
+      z-index: 6;
+      opacity: 1 !important;
+      border-radius: 3px;
     }
 
     .day.today:hover {
-      box-shadow: inset 0 0 0 2.5px var(--today-ring), 0 2px 8px rgba(0,0,0,0.18);
+      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring), 0 2px 8px rgba(0,0,0,0.22);
     }
 
+    /* ── Race Days ── */
     .day.race {
       border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 6;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      z-index: 7;
+      opacity: 1 !important;
     }
 
     .day.race:hover {
-      transform: scale(1.7);
+      transform: scale(2);
     }
 
-    .day.race.potential-race {
-      background: transparent !important;
-      border: 2.5px dashed;
-    }
-
-    /* Potential race gets a subtle fill so it doesn't vanish on training backgrounds */
     .day.race.potential-race {
       background: rgba(255,255,255,0.7) !important;
+      border: 2px dashed;
     }
 
     .day.race::before {
       content: attr(data-short);
       position: absolute;
-      font-size: 0.42rem;
+      font-size: 0.32rem;
       font-weight: 800;
       color: #fff;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
       pointer-events: none;
     }
@@ -252,24 +219,24 @@
       color: inherit;
     }
 
-    /* Overlap: split cell with two or three colors */
+    /* ── Overlap: HORIZONTAL split (top/bottom) ── */
     .day.overlap-2 {
       background: none !important;
       overflow: hidden;
     }
     .day.overlap-2 .half {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 50%;
+      left: 0;
+      right: 0;
+      height: 50%;
     }
     .day.overlap-2 .half:first-child {
-      left: 0;
-      border-radius: 4px 0 0 4px;
+      top: 0;
+      border-radius: 3px 3px 0 0;
     }
     .day.overlap-2 .half:last-child {
-      right: 0;
-      border-radius: 0 4px 4px 0;
+      bottom: 0;
+      border-radius: 0 0 3px 3px;
     }
 
     .day.overlap-3 {
@@ -278,64 +245,92 @@
     }
     .day.overlap-3 .third {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 33.33%;
+      left: 0;
+      right: 0;
+      height: 33.33%;
     }
     .day.overlap-3 .third:nth-child(1) {
-      left: 0;
-      border-radius: 4px 0 0 4px;
+      top: 0;
+      border-radius: 3px 3px 0 0;
     }
     .day.overlap-3 .third:nth-child(2) {
-      left: 33.33%;
+      top: 33.33%;
     }
     .day.overlap-3 .third:nth-child(3) {
-      right: 0;
-      border-radius: 0 4px 4px 0;
+      bottom: 0;
+      border-radius: 0 0 3px 3px;
     }
 
-    /* ── Legend ── */
+    /* ── Tooltip ── */
+    .tooltip {
+      position: fixed;
+      background: #222;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 5px 9px;
+      border-radius: 6px;
+      white-space: pre;
+      pointer-events: none;
+      z-index: 100;
+      line-height: 1.45;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+
+    .tooltip.visible { opacity: 1; }
+
+    /* ── Legend: compact ── */
     .legend-wrap {
-      margin-top: 2.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      margin-top: 1.5rem;
+      padding: 0 4px;
+    }
+
+    .legend-section {
+      margin-bottom: 0.6rem;
+    }
+
+    .legend-section:last-child {
+      margin-bottom: 0;
     }
 
     .legend-section-title {
-      font-size: 0.6rem;
+      font-size: 0.5rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: var(--text-faint);
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.25rem;
     }
 
     .legend-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem 1.4rem;
+      gap: 0.3rem 0.8rem;
       align-items: center;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.72rem;
+      gap: 0.25rem;
+      font-size: 0.6rem;
       color: var(--text-dim);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .legend-item .race-date {
       color: var(--text-faint);
-      font-size: 0.65rem;
+      font-size: 0.52rem;
+      font-weight: 500;
     }
 
     .legend-swatch {
-      width: 16px;
-      height: 16px;
-      border-radius: 3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
@@ -345,63 +340,94 @@
 
     .legend-swatch.dashed {
       background: rgba(255,255,255,0.7) !important;
-      border: 2px dashed;
+      border: 1.5px dashed;
     }
 
     .legend-swatch.overlap-demo {
       overflow: hidden;
       display: flex;
+      flex-direction: column;
     }
     .legend-swatch.overlap-demo .half {
-      width: 50%;
-      height: 100%;
+      width: 100%;
+      height: 50%;
     }
     .legend-swatch.overlap-demo .half:first-child {
-      border-radius: 3px 0 0 3px;
+      border-radius: 2px 2px 0 0;
     }
     .legend-swatch.overlap-demo .half:last-child {
-      border-radius: 0 3px 3px 0;
+      border-radius: 0 0 2px 2px;
     }
 
-    /* ── Responsive: Tablet ── */
-    @media (max-width: 700px) {
-      :root {
-        --cell-size: 18px;
-        --cell-gap: 1.5px;
-      }
-      body { padding: 1.5rem 0.5rem 2rem; }
-      header h1 { font-size: 2.2rem; }
-      .month-label { font-size: 0.55rem; width: 30px; padding-right: 5px; }
-      .day-nums-row .spacer { width: 30px; }
-      .day-num { font-size: 0.48rem; }
+    /* ── Today marker in legend ── */
+    .legend-today {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .legend-today-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--cell-default);
+      box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1px var(--today-ring);
     }
 
-    /* ── Responsive: Mobile ── */
-    @media (max-width: 480px) {
+    /* ── Responsive: large screens ── */
+    @media (min-width: 700px) {
+      body { padding: 2rem 1.5rem 3rem; }
+      header h1 { font-size: 3rem; }
+      header { margin-bottom: 1.8rem; }
       :root {
-        /* Bumped from 14px to 17px — cells are now tappable and colors distinguishable */
-        --cell-size: 17px;
-        --cell-gap: 1.5px;
+        --label-w: 36px;
+        --grid-pad: 16px;
       }
-      body { padding: 1.2rem 0.25rem 2rem; }
-      header h1 { font-size: 1.8rem; }
-      header { margin-bottom: 1.2rem; }
-      .month-label { font-size: 0.5rem; letter-spacing: 0.04em; width: 28px; padding-right: 4px; }
-      .day-nums-row .spacer { width: 28px; }
-      .day-num { font-size: 0.42rem; }
-      .legend-wrap { gap: 0.8rem; }
-      .legend-section-title { font-size: 0.52rem; }
-      .legend-item { font-size: 0.62rem; }
-      .day.race::before { font-size: 0.38rem; }
-      .day.today {
-        box-shadow: inset 0 0 0 2px var(--today-ring);
-      }
+      .year-grid { gap: 2px; }
+      .month-days { gap: 2px; }
+      .day-nums-row .nums { gap: 2px; }
+      .month-label { font-size: 0.65rem; padding-right: 6px; }
+      .day-num { font-size: 0.5rem; }
+      .day { border-radius: 4px; }
+      .day.today { border-radius: 4px; }
+      .day.overlap-2 .half:first-child { border-radius: 4px 4px 0 0; }
+      .day.overlap-2 .half:last-child { border-radius: 0 0 4px 4px; }
+      .day.overlap-3 .third:nth-child(1) { border-radius: 4px 4px 0 0; }
+      .day.overlap-3 .third:nth-child(3) { border-radius: 0 0 4px 4px; }
+      .legend-item { font-size: 0.68rem; }
+      .legend-swatch { width: 12px; height: 12px; }
+      .legend-today-swatch { width: 12px; height: 12px; }
+    }
 
-      /* Larger tap target: expand hit area without changing visual size */
-      .day::before {
+    /* ── Responsive: small mobile ── */
+    @media (max-width: 380px) {
+      :root {
+        --label-w: 22px;
+        --grid-pad: 3px;
+      }
+      body { padding: 1rem var(--grid-pad) 1.5rem; }
+      header h1 { font-size: 1.6rem; }
+      header h1 span { font-size: 0.7rem; }
+      .month-label { font-size: 0.42rem; letter-spacing: 0; padding-right: 2px; }
+      .day-num { font-size: 0.35rem; }
+      .day.race::before { font-size: 0.25rem; }
+    }
+
+    /* Larger tap target on touch */
+    @media (hover: none) {
+      .day::after {
         content: '';
         position: absolute;
-        inset: -3px;
+        inset: -2px;
+      }
+      .day:hover {
+        transform: none;
+        box-shadow: none;
+      }
+      .day.race:hover {
+        transform: none;
+      }
+      .day.today:hover {
+        box-shadow: inset 0 0 0 2px var(--today-ring), 0 0 0 1.5px var(--today-ring);
       }
     }
   </style>
@@ -411,9 +437,7 @@
     <header>
       <h1>2026 <span>Race Year</span></h1>
     </header>
-    <div class="grid-container">
-      <div class="year-grid" id="grid"></div>
-    </div>
+    <div class="year-grid" id="grid"></div>
     <div class="legend-wrap" id="legend"></div>
     <div class="tooltip" id="tooltip"></div>
   </div>
@@ -421,15 +445,16 @@
   <script>
     const YEAR = 2026;
     const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const MONTHS_LETTER = ['J','F','M','A','M','J','J','A','S','O','N','D'];
     const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 
-    // Training colors: boosted opacity for better visibility at small sizes
+    // Training colors — boosted opacity for vivid distinction
     const TRAINING_COLORS = {
-      tremblant: null, // uses phase colors
-      nespresso: 'rgba(232,129,26,0.45)',
-      hyrox:     'rgba(46,158,90,0.45)',
-      sail:      'rgba(214,51,132,0.38)',
-      beirut:    'rgba(124,77,255,0.28)',
+      tremblant: null,
+      nespresso: 'rgba(232,129,26,0.55)',
+      hyrox:     'rgba(46,158,90,0.55)',
+      sail:      'rgba(214,51,132,0.50)',
+      beirut:    'rgba(124,77,255,0.40)',
     };
 
     const events = [
@@ -480,8 +505,13 @@
       return parseD(s).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     }
 
+    function shortDate(s) {
+      return parseD(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
     // Build date map
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const todayStr = ds(today.getMonth(), today.getDate());
     const todayMonth = today.getMonth();
 
@@ -489,7 +519,15 @@
     for (let m = 0; m < 12; m++) {
       for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
         const key = ds(m, d);
-        dateMap[key] = { colors: [], labels: [], isRace: false, raceEv: null, isToday: key === todayStr };
+        const cellDate = parseD(key);
+        dateMap[key] = {
+          colors: [],
+          labels: [],
+          isRace: false,
+          raceEv: null,
+          isToday: key === todayStr,
+          isPast: cellDate < today
+        };
       }
     }
 
@@ -510,7 +548,6 @@
         });
       }
 
-      // Training (non-70.3)
       if (ev.training) {
         let cur = parseD(ev.training.start);
         const end = parseD(ev.training.end);
@@ -524,7 +561,6 @@
         }
       }
 
-      // Race day
       if (dateMap[ev.raceDate]) {
         dateMap[ev.raceDate].isRace = true;
         dateMap[ev.raceDate].raceEv = ev;
@@ -535,7 +571,7 @@
     function renderGrid() {
       const grid = document.getElementById('grid');
 
-      // Day number header row — show every 5th day + 1 for better orientation
+      // Day number header — show 1, 5, 10, 15, 20, 25, 30
       const numRow = document.createElement('div');
       numRow.className = 'day-nums-row';
       const spacer = document.createElement('div');
@@ -543,9 +579,10 @@
       numRow.appendChild(spacer);
       const nums = document.createElement('div');
       nums.className = 'nums';
+      const showNums = new Set([1, 5, 10, 15, 20, 25, 30]);
       for (let d = 1; d <= 31; d++) {
         const num = document.createElement('div');
-        num.className = 'day-num' + (d % 5 !== 1 && d !== 1 ? ' dim' : '');
+        num.className = 'day-num' + (showNums.has(d) ? '' : ' dim');
         num.textContent = d;
         nums.appendChild(num);
       }
@@ -574,6 +611,9 @@
             const key = ds(m, d);
             const info = dateMap[key];
             cell.className = 'day';
+
+            if (info.isPast) cell.classList.add('past');
+            if (info.isToday) cell.classList.add('today');
 
             if (info.isRace) {
               cell.classList.add('race');
@@ -617,8 +657,6 @@
               }
             }
 
-            if (info.isToday) cell.classList.add('today');
-
             // Build tooltip text
             const labelParts = [`${MONTHS_SHORT[m]} ${d}`];
             info.labels.forEach(l => labelParts.push(l));
@@ -635,50 +673,49 @@
 
     function renderLegend() {
       const el = document.getElementById('legend');
+      const phaseEl = events[0]; // tremblant has phases
 
       el.innerHTML = `
-        <div>
-          <div class="legend-section-title">70.3 Training Phases</div>
+        <div class="legend-section">
+          <div class="legend-section-title">Races</div>
+          <div class="legend-row">
+            ${events.map(ev => `
+              <div class="legend-item">
+                <div class="legend-swatch circle ${ev.potential ? 'dashed' : ''}" style="background:${ev.color};${ev.potential ? 'border-color:'+ev.color : ''}"></div>
+                ${ev.short} <span class="race-date">${shortDate(ev.raceDate)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="legend-section">
+          <div class="legend-section-title">70.3 Phases</div>
           <div class="legend-row">
             <div class="legend-item"><div class="legend-swatch" style="background:var(--c-base)"></div>Base</div>
             <div class="legend-item"><div class="legend-swatch" style="background:var(--c-build)"></div>Build</div>
             <div class="legend-item"><div class="legend-swatch" style="background:var(--c-peak)"></div>Peak</div>
             <div class="legend-item"><div class="legend-swatch" style="background:var(--c-taper)"></div>Taper</div>
+            ${events.filter(ev => ev.training).map(ev => `
+              <div class="legend-item"><div class="legend-swatch" style="background:${TRAINING_COLORS[ev.id]}"></div>${ev.short}</div>
+            `).join('')}
           </div>
         </div>
-        <div>
-          <div class="legend-section-title">Training Blocks</div>
+        <div class="legend-section">
           <div class="legend-row">
-            ${events.filter(ev => ev.training).map(ev => `
-              <div class="legend-item">
-                <div class="legend-swatch" style="background:${TRAINING_COLORS[ev.id]}"></div>
-                ${ev.name}
-              </div>
-            `).join('')}
+            <div class="legend-item legend-today"><div class="legend-today-swatch"></div>Today</div>
             <div class="legend-item">
               <div class="legend-swatch overlap-demo">
-                <div class="half" style="background:var(--c-base)"></div>
+                <div class="half" style="background:var(--c-build)"></div>
                 <div class="half" style="background:${TRAINING_COLORS.nespresso}"></div>
               </div>
-              Split = overlap
+              Overlap
             </div>
-          </div>
-        </div>
-        <div>
-          <div class="legend-section-title">Race Days</div>
-          <div class="legend-row">
-            ${events.map(ev => `
-              <div class="legend-item">
-                <div class="legend-swatch circle ${ev.potential ? 'dashed' : ''}" style="background:${ev.color};${ev.potential ? 'border-color:'+ev.color : ''}"></div>
-                ${ev.name} <span class="race-date">${fmtDate(ev.raceDate)}</span>
-              </div>
-            `).join('')}
+            <div class="legend-item" style="opacity:0.33"><div class="legend-swatch" style="background:var(--c-base)"></div>Past</div>
           </div>
         </div>
       `;
     }
 
-    // ── Tooltip system: works for both hover (desktop) and tap (mobile) ──
+    // ── Tooltip system ──
     function setupTooltips() {
       const tooltip = document.getElementById('tooltip');
       const grid = document.getElementById('grid');
@@ -705,17 +742,15 @@
         let left = rect.left + rect.width / 2 - tipRect.width / 2;
         let top = rect.top - tipRect.height - 8;
 
-        // Keep within viewport
-        if (left < 8) left = 8;
-        if (left + tipRect.width > window.innerWidth - 8) left = window.innerWidth - tipRect.width - 8;
-        if (top < 8) top = rect.bottom + 8; // flip below if no room above
+        if (left < 6) left = 6;
+        if (left + tipRect.width > window.innerWidth - 6) left = window.innerWidth - tipRect.width - 6;
+        if (top < 6) top = rect.bottom + 8;
 
         tooltip.style.left = left + 'px';
         tooltip.style.top = top + 'px';
       }
 
       if (isTouchDevice) {
-        // Tap to show, tap elsewhere to dismiss
         grid.addEventListener('touchstart', (e) => {
           const cell = e.target.closest('.day:not(.empty)');
           if (cell) {
@@ -736,7 +771,6 @@
           }
         });
       } else {
-        // Desktop: hover
         grid.addEventListener('mouseover', (e) => {
           const cell = e.target.closest('.day:not(.empty)');
           if (cell) showTooltip(cell);
@@ -748,27 +782,10 @@
       }
     }
 
-    // ── Scroll affordance: hide right fade when scrolled to end ──
-    function setupScrollAffordance() {
-      const gridEl = document.getElementById('grid');
-      const container = document.querySelector('.grid-container');
-
-      function checkScroll() {
-        const atEnd = gridEl.scrollLeft + gridEl.clientWidth >= gridEl.scrollWidth - 4;
-        container.classList.toggle('scrolled-end', atEnd);
-      }
-
-      gridEl.addEventListener('scroll', checkScroll, { passive: true });
-      // Check once after render
-      requestAnimationFrame(checkScroll);
-      window.addEventListener('resize', checkScroll);
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       renderGrid();
       renderLegend();
       setupTooltips();
-      setupScrollAffordance();
     });
   </script>
 </body>
