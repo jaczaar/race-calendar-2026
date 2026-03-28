@@ -1,0 +1,23 @@
+{
+  "name": "race-calendar-2026",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaczaar/race-calendar-2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaczaar/race-calendar-2026/issues"
+  },
+  "homepage": "https://github.com/jaczaar/race-calendar-2026#readme",
+  "dependencies": {
+    "puppeteer": "^24.40.0"
+  }
+}

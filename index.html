@@ -6,143 +6,235 @@
   <title>2026 Race Year</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #fff;
-      --surface: #fff;
-      --cell: #f0f0f2;
-      --text: #1a1a1e;
-      --text-mid: #6b6b76;
-      --text-dim: #b0b0b8;
-      --line: #e8e8ec;
-      --today: #e03040;
-      --label-w: 38px;
+      --label-w: 48px;
+      --gap: 5px;
+      --row-gap: 10px;
+      --cols: 37;
     }
 
-    html, body { height: 100%; }
+    /* Day theme — warm taupe */
+    :root, .theme-day {
+      --bg: #C8BEB4;
+      --surface: #BAB0A5;
+      --surface-2: #B3A99E;
+      --surface-3: #A89E93;
+      --cell: #AFA59A;
+      --cell-wknd: #A59B8F;
+      --text: #2C2825;
+      --text-mid: #524D48;
+      --text-dim: #7A746D;
+      --line: rgba(0,0,0,0.06);
+      --glow: rgba(0,0,0,0.03);
+      --overlay-a: rgba(0,0,0,0.04);
+      --cell-hover: 0.92;
+      --today-ring: rgba(0,0,0,0.25);
+      --cell-glow: rgba(0,0,0,0.06);
+      --tip-bg: rgba(190, 182, 172, 0.92);
+      --tip-border: rgba(0,0,0,0.08);
+      --tip-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+      --badge-shadow: rgba(0,0,0,0.15);
+      --cd-border: rgba(0,0,0,0.05);
+      --cd-hover-border: rgba(0,0,0,0.1);
+      --cd-hover-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --sep-color: rgba(0,0,0,0.08);
+      --grain-opacity: 0.2;
+      --ambient-glow: rgba(34, 184, 204, 0.06);
+      --title-from: #2C2825;
+      --title-to: #6B6560;
+      --bg-r: 200; --bg-g: 190; --bg-b: 180;
+    }
+
+    /* Night theme — deep navy */
+    .theme-night {
+      --bg: #1E2028;
+      --surface: #161921;
+      --surface-2: #1E2130;
+      --surface-3: #282C3E;
+      --cell: #5A6180;
+      --cell-wknd: #656D8A;
+      --text: #E2E4EB;
+      --text-mid: #8B8FA3;
+      --text-dim: #565B73;
+      --line: rgba(255,255,255,0.06);
+      --glow: rgba(255,255,255,0.03);
+      --overlay-a: rgba(255,255,255,0.06);
+      --cell-hover: 1.25;
+      --today-ring: rgba(255,255,255,0.4);
+      --cell-glow: rgba(255,255,255,0.08);
+      --tip-bg: rgba(22, 25, 33, 0.92);
+      --tip-border: rgba(255,255,255,0.08);
+      --tip-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+      --badge-shadow: rgba(0,0,0,0.4);
+      --cd-border: rgba(255,255,255,0.05);
+      --cd-hover-border: rgba(255,255,255,0.1);
+      --cd-hover-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      --sep-color: rgba(255,255,255,0.08);
+      --grain-opacity: 0.3;
+      --ambient-glow: rgba(34, 184, 204, 0.04);
+      --title-from: #E2E4EB;
+      --title-to: #8B8FA3;
+      --bg-r: 30; --bg-g: 32; --bg-b: 40;
+    }
+
+    html { height: 100%; }
 
     body {
-      font-family: 'DM Sans', system-ui, sans-serif;
+      font-family: 'Figtree', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
+      min-height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 32px 40px;
-      gap: 24px;
+      padding: 68px 40px 64px;
+      position: relative;
+      transition: background 0.8s ease, color 0.8s ease;
+    }
+
+    /* Subtle grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: var(--grain-opacity);
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    /* Ambient glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 40%;
+      background: radial-gradient(ellipse, var(--ambient-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* ── Header ── */
     header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
       flex-shrink: 0;
       width: 100%;
       max-width: 1800px;
+      padding-bottom: 24px;
+      padding-left: var(--label-w);
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeSlideDown 0.6s ease forwards;
     }
 
     header h1 {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Unbounded', sans-serif;
       font-weight: 900;
-      font-size: 1.3rem;
-      letter-spacing: -0.01em;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--title-from) 0%, var(--title-to) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    header h1 em {
-      font-style: normal;
-      font-weight: 600;
-      font-size: 0.62rem;
-      letter-spacing: 0.12em;
+    header .sub {
+      font-weight: 700;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--text-dim);
-      margin-left: 8px;
     }
-
-    .legend {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .lg {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.62rem;
-      font-weight: 600;
-      color: var(--text-mid);
-    }
-
-    .lg .d {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
-    .lg .d.dashed {
-      background: transparent !important;
-      border: 1.5px dashed;
-    }
-
-    .lg .tbc { font-size: 0.5rem; color: var(--text-dim); font-weight: 500; }
 
     /* ── Grid ── */
     .grid-wrap {
       width: 100%;
       max-width: 1800px;
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeSlideDown 0.6s ease 0.1s forwards;
+    }
+
+    .wknd-bands {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--label-w);
+      right: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      gap: var(--gap);
+    }
+
+    .wknd-bands .wb {
+      background: var(--overlay-a);
+      border-radius: 6px;
     }
 
     .year-grid {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      flex: 1;
+      gap: var(--row-gap);
     }
 
-    /* Day numbers header */
+    /* Day-of-week header */
     .dhdr {
       display: flex;
-      height: 22px;
       flex-shrink: 0;
-      margin-bottom: 4px;
+      padding-bottom: 8px;
     }
 
     .dhdr .sp { width: var(--label-w); flex-shrink: 0; }
 
     .dhdr .nums {
       display: grid;
-      grid-template-columns: repeat(31, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      gap: var(--gap);
       flex: 1;
     }
 
     .dn {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      font-size: 0.5rem;
-      font-weight: 600;
+      font-size: 0.54rem;
+      font-weight: 700;
       color: var(--text-dim);
-      padding-bottom: 2px;
+      letter-spacing: 0.04em;
     }
 
-    .dn.vis { color: var(--text-mid); }
-    .dn:not(.vis) { visibility: hidden; }
-
-    .dn.td-col {
-      color: var(--today) !important;
-      visibility: visible !important;
-      font-weight: 800;
-    }
+    .dn.wknd-hdr { color: var(--text-mid); }
 
     /* Month rows */
     .mr {
       display: flex;
-      gap: 0;
+      flex: 1;
+      min-height: 0;
+      opacity: 0;
+      animation: fadeSlideRight 0.5s ease forwards;
     }
 
     .ml {
@@ -151,26 +243,24 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding-right: 10px;
-      font-size: 0.62rem;
-      font-weight: 700;
+      padding-right: 12px;
+      font-size: 0.64rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       color: var(--text-dim);
+      user-select: none;
     }
-
-    .ml.now { color: var(--today); font-weight: 800; }
 
     .md {
       display: grid;
-      grid-template-columns: repeat(31, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      gap: var(--gap);
       flex: 1;
     }
 
     /* ── Cells ── */
     .c {
-      aspect-ratio: 1;
       background: var(--cell);
       border-radius: 4px;
       position: relative;
@@ -178,19 +268,25 @@
       align-items: center;
       justify-content: center;
       min-width: 0;
+      min-height: 0;
       cursor: default;
+      transition: filter 0.12s, transform 0.12s;
     }
 
-    .c:hover { z-index: 10; filter: brightness(0.92); }
+    .c:hover { z-index: 10; filter: brightness(var(--cell-hover)); }
     .c.x { background: transparent; pointer-events: none; }
-    .c.past { opacity: 0.45; }
-    .c.past:hover { opacity: 0.75; }
+    .c.wknd:not(.x) { background: var(--cell-wknd); }
+    .c.past { opacity: 0.35; }
+    .c.past:hover { opacity: 0.65; }
 
-    /* Today */
+    /* Today marker */
     .c.today {
-      z-index: 8;
-      opacity: 1 !important;
-      box-shadow: 0 0 0 3.5px var(--today);
+      box-shadow: inset 0 0 0 1.5px var(--today-ring);
+    }
+
+    /* Colored cells glow */
+    .c[style*="background"] {
+      box-shadow: inset 0 0 0 0.5px var(--cell-glow);
     }
 
     /* Overlap splits */
@@ -217,19 +313,19 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 16;
       pointer-events: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 2px 12px var(--badge-shadow), 0 0 20px var(--badge-glow, rgba(0,0,0,0));
     }
 
     .b span {
-      font-size: 0.44rem;
+      font-size: 0.42rem;
       font-weight: 800;
       color: #fff;
       letter-spacing: 0.02em;
@@ -239,82 +335,178 @@
     .b.pot {
       background: var(--surface) !important;
       border: 2px dashed;
-      box-shadow: none;
+      box-shadow: 0 2px 12px var(--badge-shadow);
     }
 
     .b.pot span { color: inherit; }
 
     .c.race:hover .b {
-      transform: translate(-50%, -50%) scale(1.12);
-      transition: transform 0.12s;
+      transform: translate(-50%, -50%) scale(1.18);
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Tooltip */
+    /* ── Tooltip ── */
     .tip {
       position: fixed;
-      background: var(--surface);
-      border: 1px solid var(--line);
+      background: var(--tip-bg);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid var(--tip-border);
       color: var(--text);
-      font-size: 0.68rem;
-      padding: 8px 12px;
-      border-radius: 8px;
+      font-size: 0.72rem;
+      padding: 12px 16px;
+      border-radius: 12px;
       pointer-events: none;
       z-index: 200;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      box-shadow: var(--tip-shadow);
       opacity: 0;
-      transition: opacity 0.1s;
-      max-width: 260px;
+      transition: opacity 0.12s;
+      max-width: 280px;
     }
 
     .tip.on { opacity: 1; }
 
     .tip-date {
-      font-size: 0.54rem;
+      font-size: 0.56rem;
       font-weight: 700;
       color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 3px;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
     }
 
     .tip-ev {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 2px 0;
+      gap: 8px;
+      padding: 3px 0;
       font-weight: 500;
       line-height: 1.3;
     }
 
     .tip-ev .td {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px var(--dot-glow, transparent);
+    }
+
+    .tip-rn { font-weight: 700; font-size: 0.74rem; }
+    .tip-m { font-size: 0.54rem; color: var(--text-dim); margin-top: 2px; }
+    .tip-days {
+      font-size: 0.54rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Countdowns ── */
+    .countdowns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 1800px;
+      flex-shrink: 0;
+      padding: 24px 0 4px;
+      z-index: 1;
+      position: relative;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease 0.3s forwards;
+    }
+
+    .cd-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--cd-border);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .cd-item:hover {
+      background: var(--surface-2);
+      border-color: var(--cd-hover-border);
+      box-shadow: var(--cd-hover-shadow);
+    }
+
+    .cd-item.cd-past { opacity: 0.3; }
+
+    .cd-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
 
-    .tip-rn { font-weight: 700; font-size: 0.7rem; }
-    .tip-m { font-size: 0.54rem; color: var(--text-dim); margin-top: 1px; }
+    .cd-dot.dashed {
+      background: transparent !important;
+      border: 1.5px dashed;
+    }
 
-    /* Responsive */
-    @media (max-width: 700px) {
-      :root { --label-w: 28px; }
+    .cd-name { font-weight: 600; }
+
+    .cd-days {
+      font-weight: 800;
+      font-size: 0.74rem;
+    }
+
+    .cd-sep {
+      width: 1px;
+      height: 12px;
+      background: var(--sep-color);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideRight {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      :root { --label-w: 34px; --gap: 4px; --row-gap: 8px; }
       body { padding: 20px; }
-      .ml { font-size: 0.52rem; padding-right: 6px; }
-      .b { width: 20px; height: 20px; }
-      .b span { font-size: 0.28rem; }
+      header { padding-bottom: 16px; }
+      header h1 { font-size: 1.3rem; }
+      .ml { font-size: 0.54rem; padding-right: 8px; }
+      .dn { font-size: 0.44rem; }
+      .b { width: 24px; height: 24px; }
+      .b span { font-size: 0.32rem; }
+      .cd-item { padding: 6px 12px; font-size: 0.6rem; }
     }
 
     @media (max-width: 500px) {
-      :root { --label-w: 22px; }
-      body { padding: 14px; gap: 14px; }
+      :root { --label-w: 26px; --gap: 3px; --row-gap: 6px; }
+      body { padding: 14px; }
       header h1 { font-size: 1rem; }
-      header h1 em { display: none; }
-      .lg .tbc { display: none; }
-      .ml { font-size: 0.44rem; padding-right: 4px; }
+      header .sub { display: none; }
+      .ml { font-size: 0.44rem; padding-right: 4px; letter-spacing: 0; }
       .dn { font-size: 0.36rem; }
-      .b { width: 15px; height: 15px; }
-      .b span { font-size: 0.22rem; }
+      .b { width: 18px; height: 18px; }
+      .b span { font-size: 0.24rem; }
+      .cd-item { padding: 5px 8px; font-size: 0.5rem; gap: 5px; }
+      .cd-sep { display: none; }
     }
 
     @media (hover: none) {
@@ -324,14 +516,16 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>2026<em>Race Year</em></h1>
-    <div class="legend" id="legend"></div>
+  <header style="display:none">
+    <h1>2026</h1>
+    <span class="sub">Race Calendar</span>
   </header>
   <div class="grid-wrap">
+    <div class="wknd-bands" id="wknd-bands"></div>
     <div class="year-grid" id="grid"></div>
     <div class="tip" id="tip"></div>
   </div>
+  <div class="countdowns" id="countdowns"></div>
 
   <script>
     const YEAR = 2026;
@@ -342,7 +536,7 @@
     const events = [
       {
         id: '703', name: 'Ironman 70.3 Tremblant', short: '70.3',
-        raceDate: '2026-06-21', hex: '#1a8a9a', potential: false,
+        raceDate: '2026-06-21', hex: '#22B8CC', potential: false,
         location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
         phases: [
           { name: 'Base',  start: '2026-01-21', end: '2026-04-12' },
@@ -353,33 +547,87 @@
       },
       {
         id: '21k', name: '21K Nespresso', short: '21K',
-        raceDate: '2026-04-19', hex: '#e86b5a', potential: false,
+        raceDate: '2026-04-19', hex: '#F07A6A', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Half Marathon',
         training: { start: '2026-01-26', end: '2026-04-18' }
       },
       {
         id: 'hyr', name: 'Hyrox Ottawa', short: 'HYR',
-        raceDate: '2026-05-14', hex: '#c45e10', potential: false,
+        raceDate: '2026-05-14', hex: '#E5C040', potential: false,
         location: 'EY Centre, Ottawa', type: 'Hyrox',
         training: { start: '2026-03-02', end: '2026-05-13' }
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
-        raceDate: '2026-09-12', hex: '#d63060', potential: false,
+        raceDate: '2026-09-12', hex: '#E84878', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Olympic Tri',
         training: { start: '2026-07-06', end: '2026-09-11' }
       },
       {
         id: 'bei', name: 'Beirut Marathon', short: 'BEI',
-        raceDate: '2026-11-29', hex: '#8860d0', potential: true,
+        raceDate: '2026-11-29', hex: '#9B7AE0', potential: true,
         location: 'Beirut, Lebanon', type: 'Marathon',
         training: { start: '2026-09-01', end: '2026-11-28' }
       },
     ];
 
-    // Training fill = event hex so colors match exactly
+    /* Desaturated training fills for dark bg depth */
+    function desaturate(hex, amount) {
+      const r = parseInt(hex.slice(1,3),16);
+      const g = parseInt(hex.slice(3,5),16);
+      const b = parseInt(hex.slice(5,7),16);
+      const avg = (r + g + b) / 3;
+      const nr = Math.round(r + (avg - r) * amount);
+      const ng = Math.round(g + (avg - g) * amount);
+      const nb = Math.round(b + (avg - b) * amount);
+      return `rgb(${nr},${ng},${nb})`;
+    }
+
+    function mixWithBg(hex, opacity) {
+      const s = getComputedStyle(document.documentElement);
+      const bg = [
+        parseInt(s.getPropertyValue('--bg-r')),
+        parseInt(s.getPropertyValue('--bg-g')),
+        parseInt(s.getPropertyValue('--bg-b'))
+      ];
+      const r = parseInt(hex.slice(1,3),16);
+      const g = parseInt(hex.slice(3,5),16);
+      const b = parseInt(hex.slice(5,7),16);
+      const nr = Math.round(r * opacity + bg[0] * (1 - opacity));
+      const ng = Math.round(g * opacity + bg[1] * (1 - opacity));
+      const nb = Math.round(b * opacity + bg[2] * (1 - opacity));
+      return `rgb(${nr},${ng},${nb})`;
+    }
+
+    /* ── Sunrise / Sunset calculation ── */
+    function calcSunTimes(lat, lng, date) {
+      const rad = Math.PI / 180;
+      const dayOfYear = Math.floor((date - new Date(date.getFullYear(),0,0)) / 86400000);
+      const decl = -23.45 * Math.cos(rad * 360/365 * (dayOfYear + 10));
+      const ha = Math.acos(
+        (Math.cos(90.833 * rad) - Math.sin(lat * rad) * Math.sin(decl * rad))
+        / (Math.cos(lat * rad) * Math.cos(decl * rad))
+      ) / rad;
+      const solarNoon = 720 - 4 * lng - date.getTimezoneOffset();
+      const sunrise = solarNoon - ha * 4;
+      const sunset = solarNoon + ha * 4;
+      return { sunrise, sunset }; // minutes since midnight
+    }
+
+    function applyTheme() {
+      // Default: Montreal 45.5°N, 73.6°W
+      const lat = 45.5, lng = -73.6;
+      const now = new Date();
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const { sunrise, sunset } = calcSunTimes(lat, lng, now);
+      const isNight = mins < sunrise || mins >= sunset;
+      document.documentElement.className = isNight ? 'theme-night' : 'theme-day';
+    }
+
     events.forEach(ev => {
-      if (ev.phases) ev.phases.forEach(ph => { ph.fill = ev.hex; });
+      if (ev.phases) ev.phases.forEach(ph => {
+        ph.fill = ev.hex;
+      });
       if (ev.training) ev.trainingFill = ev.hex;
     });
 
@@ -393,7 +641,6 @@
     const isCurrentYear = today.getFullYear() === YEAR;
     const todayStr = isCurrentYear ? ds(today.getMonth(), today.getDate()) : '';
     const todayMonth = isCurrentYear ? today.getMonth() : -1;
-    const todayDay = isCurrentYear ? today.getDate() : -1;
 
     const dateMap = {};
     for (let m = 0; m < 12; m++) {
@@ -452,10 +699,24 @@
 
     Object.values(dateMap).forEach(i => i.layers.sort((a, b) => a.end - b.end));
 
+    function monOffset(m) {
+      const jsDay = new Date(YEAR, m, 1).getDay();
+      return (jsDay + 6) % 7;
+    }
+
+    function renderWeekendBands() {
+      const el = document.getElementById('wknd-bands');
+      for (let i = 0; i < 37; i++) {
+        const col = document.createElement('div');
+        if (i % 7 >= 5) col.className = 'wb';
+        el.appendChild(col);
+      }
+    }
+
     function renderGrid() {
       const grid = document.getElementById('grid');
+      const DLET = ['M','T','W','T','F','S','S'];
 
-      // Day header
       const hdr = document.createElement('div');
       hdr.className = 'dhdr';
       const sp = document.createElement('div');
@@ -463,13 +724,12 @@
       hdr.appendChild(sp);
       const nums = document.createElement('div');
       nums.className = 'nums';
-      const show = new Set([1, 5, 10, 15, 20, 25, 31]);
-      for (let d = 1; d <= 31; d++) {
+      for (let i = 0; i < 37; i++) {
         const n = document.createElement('div');
         n.className = 'dn';
-        if (show.has(d)) n.classList.add('vis');
-        if (d === todayDay && todayMonth >= 0) n.classList.add('td-col');
-        n.textContent = d;
+        const dow = i % 7;
+        n.textContent = DLET[dow];
+        if (dow >= 5) n.classList.add('wknd-hdr');
         nums.appendChild(n);
       }
       hdr.appendChild(nums);
@@ -478,28 +738,33 @@
       for (let m = 0; m < 12; m++) {
         const row = document.createElement('div');
         row.className = 'mr';
+        row.style.animationDelay = `${0.15 + m * 0.04}s`;
 
         const lbl = document.createElement('div');
-        lbl.className = 'ml' + (m === todayMonth ? ' now' : '');
+        lbl.className = 'ml';
         lbl.textContent = MO[m];
         row.appendChild(lbl);
 
         const days = document.createElement('div');
         days.className = 'md';
 
-        for (let d = 1; d <= 31; d++) {
+        const offset = monOffset(m);
+
+        for (let i = 0; i < 37; i++) {
+          const d = i - offset + 1;
           const el = document.createElement('div');
-          if (d > DIM[m]) {
+          if (d < 1 || d > DIM[m]) {
             el.className = 'c x';
           } else {
             const key = ds(m, d);
             const info = dateMap[key];
             el.className = 'c';
             el.setAttribute('data-key', key);
+            const dow = i % 7;
+            if (dow >= 5) el.classList.add('wknd');
             if (info.isPast) el.classList.add('past');
             if (info.isToday) el.classList.add('today');
 
-            // Deduplicate layers by event id
             const byId = new Map();
             for (const l of info.layers) {
               if (!byId.has(l.id)) byId.set(l.id, l);
@@ -512,9 +777,11 @@
               const b = document.createElement('div');
               b.className = 'b' + (ev.potential ? ' pot' : '');
               b.style.background = ev.hex;
+              b.style.setProperty('--badge-glow', ev.hex + '60');
               if (ev.potential) {
                 b.style.borderColor = ev.hex;
                 b.style.color = ev.hex;
+                b.style.background = 'var(--surface)';
               }
               b.innerHTML = `<span>${ev.short}</span>`;
               el.appendChild(b);
@@ -548,17 +815,6 @@
       }
     }
 
-    function renderLegend() {
-      const el = document.getElementById('legend');
-      el.innerHTML = events.map(ev =>
-        `<div class="lg">
-          <div class="d ${ev.potential ? 'dashed' : ''}" style="background:${ev.hex};${ev.potential ? 'border-color:'+ev.hex+';background:transparent' : ''}"></div>
-          <span>${ev.short}</span>
-          ${ev.potential ? '<span class="tbc">tbc</span>' : ''}
-        </div>`
-      ).join('');
-    }
-
     function setupTooltips() {
       const tip = document.getElementById('tip');
       const grid = document.getElementById('grid');
@@ -575,12 +831,19 @@
         const m = parseInt(ms) - 1, d = parseInt(ds2);
         const dt = new Date(YEAR, m, d);
 
+        const diffMs = dt.getTime() - today.getTime();
+        const diffDays = Math.round(diffMs / 86400000);
+        let daysLabel = '';
+        if (diffDays > 0) daysLabel = `${diffDays} day${diffDays === 1 ? '' : 's'} from now`;
+        else if (diffDays < 0) daysLabel = `${-diffDays} day${diffDays === -1 ? '' : 's'} ago`;
+        else daysLabel = 'Today';
+
         let html = `<div class="tip-date">${WDAY[dt.getDay()]}, ${MO[m]} ${d}</div>`;
         if (!info.tips.length) {
           html += `<div class="tip-ev" style="color:var(--text-dim)">Rest day</div>`;
         } else {
           info.tips.forEach(p => {
-            html += `<div class="tip-ev"><div class="td" style="background:${p.color}"></div>`;
+            html += `<div class="tip-ev"><div class="td" style="background:${p.color};--dot-glow:${p.color}80"></div>`;
             if (p.bold) {
               html += `<div><div class="tip-rn" style="color:${p.color}">${p.text}</div>`;
               if (p.meta) html += `<div class="tip-m">${p.meta}</div>`;
@@ -591,6 +854,7 @@
             html += `</div>`;
           });
         }
+        html += `<div class="tip-days">${daysLabel}</div>`;
         tip.innerHTML = html;
         tip.classList.add('on');
         const r = cell.getBoundingClientRect();
@@ -624,10 +888,38 @@
       }
     }
 
+    function renderCountdowns() {
+      const el = document.getElementById('countdowns');
+      const sorted = [...events].sort((a, b) => parseD(a.raceDate) - parseD(b.raceDate));
+      el.innerHTML = sorted.map(ev => {
+        const rd = parseD(ev.raceDate);
+        const diffMs = rd.getTime() - today.getTime();
+        const diffDays = Math.round(diffMs / 86400000);
+        let label;
+        if (diffDays > 0) label = `${diffDays}d`;
+        else if (diffDays === 0) label = 'Today';
+        else label = `${-diffDays}d ago`;
+        const pastCls = diffDays < 0 ? ' cd-past' : '';
+        const dashedCls = ev.potential ? ' dashed' : '';
+        return `<div class="cd-item${pastCls}">
+          <div class="cd-dot${dashedCls}" style="background:${ev.hex};${ev.potential ? 'border-color:'+ev.hex+';background:transparent' : ''}"></div>
+          <span class="cd-name">${ev.name}</span>
+          <div class="cd-sep"></div>
+          <span class="cd-days" style="color:${ev.hex}">${label}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Apply theme immediately (before DOMContentLoaded) to avoid flash
+    applyTheme();
+
     document.addEventListener('DOMContentLoaded', () => {
+      renderWeekendBands();
       renderGrid();
-      renderLegend();
+      renderCountdowns();
       setupTooltips();
+      // Re-check every minute for sunrise/sunset transitions
+      setInterval(applyTheme, 60000);
     });
   </script>
 </body>
