@@ -4,28 +4,29 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 
 const HTML_PATH = path.join(__dirname, 'index.html');
-const OUTPUT_PATH = path.join(__dirname, 'wallpaper.png');
-// macOS caches wallpaper by file path — using a second path forces a refresh
-const SWAP_PATH = path.join(__dirname, 'wallpaper2.png');
+const PATH_A = path.join(__dirname, 'wallpaper.png');
+const PATH_B = path.join(__dirname, 'wallpaper2.png');
+const STATE_FILE = path.join(__dirname, '.wallpaper-last');
 
 (async () => {
+  // Alternate between two paths so macOS sees a "new" file each time
+  let last = '';
+  try { last = fs.readFileSync(STATE_FILE, 'utf8').trim(); } catch {}
+  const target = last === PATH_A ? PATH_B : PATH_A;
+
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
-  await page.setViewport({ width: 1512, height: 982, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1920, height: 1248, deviceScaleFactor: 2 });
   await page.goto(`file://${HTML_PATH}`, { waitUntil: 'networkidle0' });
 
-  // Wait for fonts and animations to finish
   await new Promise(r => setTimeout(r, 1500));
 
-  await page.screenshot({ path: OUTPUT_PATH, type: 'png' });
+  await page.screenshot({ path: target, type: 'png' });
   await browser.close();
 
-  // macOS caches wallpaper by filename. To force it to re-read the image:
-  // 1. Copy to a swap file (new path = cache miss)
-  // 2. Set wallpaper to the swap file
-  fs.copyFileSync(OUTPUT_PATH, SWAP_PATH);
-  execSync(`osascript -e 'tell application "System Events" to tell every desktop to set picture to "${SWAP_PATH}"'`);
+  execSync(`osascript -e 'tell application "System Events" to tell every desktop to set picture to "${target}"'`);
+  fs.writeFileSync(STATE_FILE, target);
 
-  console.log(`Wallpaper set: ${SWAP_PATH}`);
+  console.log(`Wallpaper set: ${target}`);
 })();
