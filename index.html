@@ -91,7 +91,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 184px 80px 180px;
+      padding: 244px 80px 104px;
       position: relative;
       transition: background 0.8s ease, color 0.8s ease;
     }
@@ -273,6 +273,21 @@
       transition: filter 0.12s, transform 0.12s;
     }
 
+
+    .c[data-day]::after {
+      content: attr(data-day);
+      position: absolute;
+      font-size: 0.52rem;
+      font-weight: 700;
+      color: var(--text);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 20;
+      line-height: 1;
+    }
+
+    .c.race::after { display: none; }
+
     .c:hover { z-index: 10; filter: brightness(var(--cell-hover)); }
     .c.x { background: transparent; pointer-events: none; }
     .c.wknd:not(.x) { background: var(--cell-wknd); }
@@ -413,7 +428,7 @@
       width: 100%;
       max-width: 1800px;
       flex-shrink: 0;
-      padding: 24px 0 4px;
+      padding: 100px 0 4px;
       z-index: 1;
       position: relative;
       opacity: 0;
@@ -760,6 +775,7 @@
             const info = dateMap[key];
             el.className = 'c';
             el.setAttribute('data-key', key);
+            el.setAttribute('data-day', d);
             const dow = i % 7;
             if (dow >= 5) el.classList.add('wknd');
             if (info.isPast) el.classList.add('past');
