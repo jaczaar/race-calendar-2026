@@ -522,6 +522,12 @@
       .b span { font-size: 0.24rem; }
       .cd-item { padding: 5px 8px; font-size: 0.5rem; gap: 5px; }
       .cd-sep { display: none; }
+      .c[data-day]::after {
+        width: 1ch;
+        word-break: break-all;
+        line-height: 0.9;
+        text-align: center;
+      }
     }
 
     @media (hover: none) {
@@ -571,6 +577,17 @@
         raceDate: '2026-05-14', hex: '#E5C040', potential: false,
         location: 'EY Centre, Ottawa', type: 'Hyrox',
         training: { start: '2026-03-02', end: '2026-05-13' }
+      },
+      {
+        id: 'thm', name: 'Tremblant Half Marathon', short: 'THM',
+        raceDate: '2026-08-09', hex: '#4ECDC4', potential: true,
+        location: 'Mont-Tremblant, QC', type: 'Half Marathon'
+      },
+      {
+        id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
+        raceDate: '2026-08-22', hex: '#FF6B35', potential: true,
+        location: 'Ottawa, ON', type: 'Spartan',
+        training: { start: '2026-06-22', end: '2026-08-21' }
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
