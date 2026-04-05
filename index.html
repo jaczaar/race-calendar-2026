@@ -522,6 +522,12 @@
       .b span { font-size: 0.24rem; }
       .cd-item { padding: 5px 8px; font-size: 0.5rem; gap: 5px; }
       .cd-sep { display: none; }
+      .c[data-day]::after {
+        width: 1ch;
+        word-break: break-all;
+        line-height: 0.9;
+        text-align: center;
+      }
     }
 
     @media (hover: none) {
