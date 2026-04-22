@@ -455,7 +455,10 @@
       box-shadow: var(--cd-hover-shadow);
     }
 
-    .cd-item.cd-past { opacity: 0.3; }
+    .cd-item.cd-past .cd-dot,
+    .cd-item.cd-past .cd-name,
+    .cd-item.cd-past .cd-sep,
+    .cd-item.cd-past .cd-days:not(.cd-result) { opacity: 0.3; }
 
     .cd-dot {
       width: 8px;
@@ -570,7 +573,8 @@
         id: '21k', name: '21K Nespresso', short: '21K',
         raceDate: '2026-04-19', hex: '#F07A6A', potential: false,
         location: 'Parc Jean-Drapeau', type: 'Half Marathon',
-        training: { start: '2026-01-26', end: '2026-04-18' }
+        training: { start: '2026-01-26', end: '2026-04-18' },
+        result: '1:20:33'
       },
       {
         id: 'hyr', name: 'Hyrox Ottawa', short: 'HYR',
@@ -931,6 +935,7 @@
         let label;
         if (diffDays > 0) label = `${diffDays}d`;
         else if (diffDays === 0) label = 'Today';
+        else if (ev.result) label = ev.result;
         else label = `${-diffDays}d ago`;
         const pastCls = diffDays < 0 ? ' cd-past' : '';
         const dashedCls = ev.potential ? ' dashed' : '';
@@ -938,7 +943,7 @@
           <div class="cd-dot${dashedCls}" style="background:${ev.hex};${ev.potential ? 'border-color:'+ev.hex+';background:transparent' : ''}"></div>
           <span class="cd-name">${ev.name}</span>
           <div class="cd-sep"></div>
-          <span class="cd-days" style="color:${ev.hex}">${label}</span>
+          <span class="cd-days${ev.result && diffDays < 0 ? ' cd-result' : ''}" style="color:${ev.hex}">${label}</span>
         </div>`;
       }).join('');
     }
