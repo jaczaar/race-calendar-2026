@@ -591,15 +591,27 @@
         result: '1:09'
       },
       {
-        id: 'thm', name: 'Tremblant Half Marathon', short: 'THM',
-        raceDate: '2026-08-09', hex: '#4ECDC4', potential: true,
-        location: 'Mont-Tremblant, QC', type: 'Half Marathon'
+        id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
+        raceDate: '2026-08-22', hex: '#FF6B35', potential: false,
+        location: 'Calabogie Peaks, ON', type: 'Spartan',
+        training: { start: '2026-06-22', end: '2026-08-21' }
       },
       {
-        id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
-        raceDate: '2026-08-22', hex: '#FF6B35', potential: true,
-        location: 'Ottawa, ON', type: 'Spartan',
-        training: { start: '2026-06-22', end: '2026-08-21' }
+        id: 'gal', name: 'La Galopade Demi (training)', short: 'GAL',
+        raceDate: '2026-08-30', hex: '#C77A6A', potential: true,
+        location: 'Saint-Esprit, QC', type: 'Half Marathon (training)',
+        training: { start: '2026-08-04', end: '2026-08-29' }
+      },
+      {
+        id: 'dc', name: 'HYROX Washington DC', short: 'DC',
+        raceDate: '2026-09-06', hex: '#E5C040', potential: false,
+        location: 'Washington DC', type: 'Hyrox',
+        phases: [
+          { name: 'Base',  start: '2026-06-22', end: '2026-07-21' },
+          { name: 'Build', start: '2026-07-22', end: '2026-08-15' },
+          { name: 'Peak',  start: '2026-08-16', end: '2026-08-30' },
+          { name: 'Taper', start: '2026-08-31', end: '2026-09-04' },
+        ]
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
@@ -608,10 +620,21 @@
         training: { start: '2026-07-06', end: '2026-09-11' }
       },
       {
+        id: 'tor', name: 'Toronto Waterfront Marathon', short: 'TOR',
+        raceDate: '2026-10-18', hex: '#C73E3A', potential: false,
+        location: 'Toronto, ON', type: 'Marathon (BQ)',
+        phases: [
+          { name: 'Base',  start: '2026-08-04', end: '2026-09-06' },
+          { name: 'Build', start: '2026-09-07', end: '2026-10-04' },
+          { name: 'Peak',  start: '2026-10-05', end: '2026-10-11' },
+          { name: 'Taper', start: '2026-10-12', end: '2026-10-17' },
+        ]
+      },
+      {
         id: 'bei', name: 'Beirut Marathon', short: 'BEI',
-        raceDate: '2026-11-29', hex: '#9B7AE0', potential: true,
-        location: 'Beirut, Lebanon', type: 'Marathon',
-        training: { start: '2026-09-01', end: '2026-11-28' }
+        raceDate: '2026-11-29', hex: '#9B7AE0', potential: false,
+        location: 'Beirut, Lebanon', type: 'Marathon (carryover)',
+        training: { start: '2026-10-19', end: '2026-11-28' }
       },
     ];
 
