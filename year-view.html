@@ -182,6 +182,66 @@
 
     .chip.on .opt-tag { color: var(--chip-color); opacity: 0.75; }
 
+    .opt-tag.candidate-tag { color: #6FA8C9; }
+    .opt-tag.done-tag { color: #4FA85B; opacity: 0.6; }
+    .chip.on .opt-tag.candidate-tag { color: var(--chip-color); }
+    .chip.on .opt-tag.done-tag { color: var(--chip-color); opacity: 0.5; }
+
+    .cat-group {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .cat-group:first-of-type {
+      margin-top: 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .cat-label {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      min-width: 110px;
+    }
+
+    .cat-mini {
+      font-family: 'Figtree', system-ui, sans-serif;
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: transparent;
+      border: 1px solid var(--line);
+      padding: 3px 9px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .cat-mini:hover {
+      color: var(--text);
+      border-color: var(--line-strong);
+      background: var(--surface-2);
+    }
+
+    .cat-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     .timeline {
       max-width: 1800px;
       margin: 0 auto;
@@ -546,9 +606,7 @@
       <button class="preset-btn" data-preset="C">Option C — compressed</button>
       <button class="preset-btn" data-preset="none">Clear</button>
     </div>
-    <div class="picker-row" id="chipRow">
-      <div class="picker-label">Pick races</div>
-    </div>
+    <div id="categoryGroups"></div>
   </div>
 
   <div class="timeline">
@@ -612,7 +670,9 @@
       </div>
     </div>
     <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--text-dim);font-size:0.62rem;line-height:1.55">
-      <strong style="color:var(--text-mid)">Always in the year:</strong> 21K Nespresso (Apr 19, 1:20:33) · 5K NDL (May 3, 17:05) · Hyrox Ottawa (May 14, 1:09) · 70.3 Tremblant (Jun 21, A-race) · Spartan Ottawa (Aug 22) · SAIL Esprit Olympic Tri (Sept 12).
+      <strong style="color:var(--text-mid)">Locked in the year:</strong> 21K Nespresso (Apr 19, 1:20:33) · 5K NDL (May 3, 17:05) · Hyrox Ottawa (May 14, 1:09) · 70.3 Tremblant (Jun 21, A-race) · Spartan Ottawa (Aug 22) · SAIL Esprit Olympic Tri (Sept 12).
+      <br><br>
+      <strong style="color:var(--text-mid)">Other half marathons in the area (candidates):</strong> Mont-Tremblant Half (Aug 9, scenic Laurentides) · Beneva Montréal Half (Oct 11, biggest Montreal half) · P'tit Train du Nord Half (Oct 3) · Parc Jean-Drapeau Sun Life Half (Oct 25). All have 2-month training blocks; toggle on to see how they fit.
     </div>
   </div>
 
@@ -629,6 +689,7 @@
         id: '21k', name: '21K Nespresso', short: '21K',
         raceDate: '2026-04-19', hex: '#F07A6A',
         location: 'Parc Jean-Drapeau', type: 'Half Marathon',
+        category: 'Half Marathon',
         training: { start: '2026-01-26', end: '2026-04-18' },
         result: '1:20:33'
       },
@@ -636,6 +697,7 @@
         id: 'ndl', name: '5K NDL', short: 'NDL',
         raceDate: '2026-05-03', hex: '#4FA85B',
         location: 'Montreal, QC', type: '5K',
+        category: '5K',
         training: { start: '2026-04-20', end: '2026-05-02' },
         result: '17:05'
       },
@@ -643,6 +705,7 @@
         id: 'hyr', name: 'Hyrox Ottawa', short: 'HYR',
         raceDate: '2026-05-14', hex: '#E5C040',
         location: 'EY Centre, Ottawa', type: 'Hyrox',
+        category: 'Hyrox',
         training: { start: '2026-03-02', end: '2026-05-13' },
         result: '1:09'
       },
@@ -650,6 +713,7 @@
         id: '703', name: '70.3 Tremblant', short: '70.3',
         raceDate: '2026-06-21', hex: '#1A8FA0',
         location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
+        category: 'Triathlon',
         phases: [
           { name: 'Base',  start: '2026-01-21', end: '2026-04-12' },
           { name: 'Build', start: '2026-04-13', end: '2026-05-31' },
@@ -658,21 +722,32 @@
         ]
       },
       {
+        id: 'tremHalf', name: 'Mont-Tremblant Half', short: 'TRH',
+        raceDate: '2026-08-09', hex: '#E67E5B',
+        location: 'Mont-Tremblant, QC', type: 'Half Marathon (scenic)',
+        category: 'Half Marathon',
+        training: { start: '2026-06-09', end: '2026-08-08' },
+        note: 'Scenic half in the Laurentides. Overlaps the 70.3 build — fit only as a carry-over fitness race after 70.3.',
+        candidate: true
+      },
+      {
         id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
         raceDate: '2026-08-22', hex: '#FF6B35',
         location: 'Calabogie Peaks, ON', type: 'Spartan',
+        category: 'Obstacle',
         training: { start: '2026-06-22', end: '2026-08-21' }
       },
       {
         id: 'dc', name: 'Hyrox DC', short: 'DC',
         raceDate: '2026-09-05', hex: '#E5C040',
         location: 'Washington DC', type: 'Hyrox',
+        category: 'Hyrox',
         weekend: 'Sept 3-7',
-        note: 'PR attempt — full phased build off post-70.3 base.',
+        note: 'PR attempt — 2-month phased build.',
         phases: [
-          { name: 'Base',  start: '2026-06-22', end: '2026-07-21' },
-          { name: 'Build', start: '2026-07-22', end: '2026-08-15' },
-          { name: 'Peak',  start: '2026-08-16', end: '2026-08-30' },
+          { name: 'Base',  start: '2026-07-05', end: '2026-08-01' },
+          { name: 'Build', start: '2026-08-02', end: '2026-08-22' },
+          { name: 'Peak',  start: '2026-08-23', end: '2026-08-30' },
           { name: 'Taper', start: '2026-08-31', end: '2026-09-04' },
         ]
       },
@@ -680,69 +755,87 @@
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
         raceDate: '2026-09-12', hex: '#E84878',
         location: 'Parc Jean-Drapeau', type: 'Olympic Tri',
-        training: { start: '2026-07-06', end: '2026-09-11' },
+        category: 'Triathlon',
+        training: { start: '2026-07-12', end: '2026-09-11' },
         note: 'Follows HYROX DC by ~1 week. Race as aerobic tempo if fatigued.'
       },
       {
         id: 'hyrTor', name: 'Hyrox Toronto', short: 'TOR',
         raceDate: '2026-10-03', hex: '#D4A017',
         location: 'Toronto, ON', type: 'Hyrox',
+        category: 'Hyrox',
         weekend: 'Oct 1-4',
-        training: { start: '2026-09-13', end: '2026-10-02' },
+        training: { start: '2026-08-03', end: '2026-10-02' },
         note: 'Controlled / B-race. Tune-up after DC PR attempt.',
-        optional: true, options: ['A']
+        options: ['A']
       },
       {
         id: 'ptn', name: "P'tit Train du Nord Half", short: 'PTN',
         raceDate: '2026-10-03', hex: '#FF8C5A',
         location: 'Laurentides, QC', type: 'Half Marathon (tune-up)',
-        training: { start: '2026-09-13', end: '2026-10-02' },
-        note: 'Tune-up half. Sits in same Oct 3 slot as Hyrox Toronto in Option B.',
-        optional: true, options: ['B']
+        category: 'Half Marathon',
+        training: { start: '2026-08-03', end: '2026-10-02' },
+        note: 'Tune-up half. Same Oct 3 slot as Hyrox Toronto.',
+        options: ['B']
+      },
+      {
+        id: 'beneva', name: 'Beneva Montréal Half', short: 'BNV',
+        raceDate: '2026-10-11', hex: '#D85F4F',
+        location: 'Montreal, QC', type: 'Half Marathon (big-field)',
+        category: 'Half Marathon',
+        training: { start: '2026-08-11', end: '2026-10-10' },
+        note: 'Marathon Beneva weekend (Oct 9-11). Largest Montreal half. One week before Lachine.',
+        candidate: true
       },
       {
         id: 'lach', name: 'Lachine Half', short: 'LAC',
         raceDate: '2026-10-18', hex: '#C73E3A',
         location: 'Lachine, QC', type: 'Half Marathon (primary)',
+        category: 'Half Marathon',
         phases: [
-          { name: 'Base',  start: '2026-08-04', end: '2026-09-06' },
-          { name: 'Build', start: '2026-09-07', end: '2026-10-04' },
+          { name: 'Base',  start: '2026-08-18', end: '2026-09-13' },
+          { name: 'Build', start: '2026-09-14', end: '2026-10-04' },
           { name: 'Peak',  start: '2026-10-05', end: '2026-10-11' },
           { name: 'Taper', start: '2026-10-12', end: '2026-10-17' },
         ],
-        note: 'Primary half. Common to all 3 options.',
-        optional: true, options: ['A', 'B', 'C']
+        note: 'Primary half — phased 2-month build. Common to all 3 options.',
+        options: ['A', 'B', 'C']
       },
       {
         id: 'hyrTam', name: 'Hyrox Tampa', short: 'TAM',
         raceDate: '2026-10-24', hex: '#C99012',
         location: 'Tampa, FL', type: 'Hyrox (controlled)',
+        category: 'Hyrox',
         weekend: 'Oct 23-25',
-        training: { start: '2026-10-19', end: '2026-10-23' },
+        training: { start: '2026-08-24', end: '2026-10-23' },
         note: 'Controlled only. Tight 5-7 day gap after Lachine — risky.',
-        optional: true, options: ['B', 'C']
+        options: ['B', 'C']
       },
       {
         id: 'pjd', name: 'Parc Jean-Drapeau Half', short: 'PJD',
         raceDate: '2026-10-25', hex: '#E55050',
-        location: 'Parc Jean-Drapeau', type: 'Half Marathon',
-        training: { start: '2026-10-19', end: '2026-10-24' },
-        note: 'One week after Lachine, same weekend as Tampa. Compressed.',
-        optional: true, options: ['C']
+        location: 'Parc Jean-Drapeau', type: 'Half Marathon (Sun Life)',
+        category: 'Half Marathon',
+        training: { start: '2026-08-25', end: '2026-10-24' },
+        note: 'Demi-Marathon Sun Life. One week after Lachine, same weekend as Tampa.',
+        options: ['C']
       },
       {
         id: 'redb', name: 'Red Baron Half', short: 'RB',
         raceDate: '2026-11-01', hex: '#B33A3A',
         location: 'Montreal, QC', type: 'Half Marathon (backup)',
-        training: { start: '2026-10-19', end: '2026-10-31' },
+        category: 'Half Marathon',
+        training: { start: '2026-09-01', end: '2026-10-31' },
         note: 'Backup half — 2 weeks after Lachine.',
-        optional: true, options: ['A']
+        options: ['A']
       },
       {
         id: 'bei', name: 'Beirut Marathon', short: 'BEI',
         raceDate: '2026-11-29', hex: '#9B7AE0',
         location: 'Beirut, Lebanon', type: 'Marathon (carryover)',
-        training: { start: '2026-11-02', end: '2026-11-28' }
+        category: 'Marathon',
+        training: { start: '2026-08-29', end: '2026-11-28' },
+        note: '3-month training block — long carryover build through the fall.'
       },
     ];
 
@@ -782,18 +875,19 @@
     const tip = document.getElementById('tip');
 
     /* ── Picker state ── */
+    const coreIds = ['21k', 'ndl', 'hyr', '703', 'spo', 'dc', 'sail', 'bei'];
     const optionPresets = {
-      'A': ['hyrTor', 'lach', 'redb'],
-      'B': ['ptn', 'lach', 'hyrTam'],
-      'C': ['lach', 'hyrTam', 'pjd'],
+      'A': [...coreIds, 'hyrTor', 'lach', 'redb'],
+      'B': [...coreIds, 'ptn', 'lach', 'hyrTam'],
+      'C': [...coreIds, 'lach', 'hyrTam', 'pjd'],
     };
-    const optionalIds = events.filter(e => e.optional).map(e => e.id);
+    const allIds = events.map(e => e.id);
     let activePreset = 'all';
-    let selected = new Set(optionalIds);
+    let selected = new Set(allIds);
 
     function applyPreset(key) {
       activePreset = key;
-      if (key === 'all') selected = new Set(optionalIds);
+      if (key === 'all') selected = new Set(allIds);
       else if (key === 'none') selected = new Set();
       else selected = new Set(optionPresets[key] || []);
       renderLanes();
@@ -812,7 +906,7 @@
 
     function detectPreset() {
       const sel = [...selected].sort().join(',');
-      if (sel === [...optionalIds].sort().join(',')) return 'all';
+      if (sel === [...allIds].sort().join(',')) return 'all';
       if (sel === '') return 'none';
       for (const k of Object.keys(optionPresets)) {
         if (sel === [...optionPresets[k]].sort().join(',')) return k;
@@ -826,17 +920,60 @@
       });
     }
 
+    function setCategorySelection(cat, value) {
+      events.filter(e => e.category === cat).forEach(e => {
+        if (value) selected.add(e.id);
+        else selected.delete(e.id);
+      });
+      activePreset = detectPreset();
+      renderLanes();
+      updateChips();
+      updatePresetButtons();
+    }
+
     function buildChips() {
-      const row = document.getElementById('chipRow');
-      events.filter(e => e.optional).forEach(ev => {
-        const chip = document.createElement('button');
-        chip.className = 'chip';
-        chip.dataset.id = ev.id;
-        chip.style.setProperty('--chip-color', ev.hex);
-        const optTag = ev.options ? ev.options.join('/') : '';
-        chip.innerHTML = `<span class="chip-swatch" style="background:${ev.hex}"></span>${ev.name}${optTag ? ` <span class="opt-tag">${optTag}</span>` : ''}`;
-        chip.addEventListener('click', () => toggleRace(ev.id));
-        row.appendChild(chip);
+      const wrap = document.getElementById('categoryGroups');
+      const categoryOrder = [];
+      events.forEach(e => {
+        if (!categoryOrder.includes(e.category)) categoryOrder.push(e.category);
+      });
+      categoryOrder.forEach(cat => {
+        const group = document.createElement('div');
+        group.className = 'cat-group';
+        const header = document.createElement('div');
+        header.className = 'cat-header';
+        header.innerHTML = `
+          <div class="cat-label">${cat}</div>
+          <button class="cat-mini" data-cat="${cat}" data-action="all">All</button>
+          <button class="cat-mini" data-cat="${cat}" data-action="none">None</button>
+        `;
+        group.appendChild(header);
+
+        const chipRow = document.createElement('div');
+        chipRow.className = 'cat-chips';
+        events.filter(e => e.category === cat)
+          .sort((a, b) => parseD(a.raceDate) - parseD(b.raceDate))
+          .forEach(ev => {
+            const chip = document.createElement('button');
+            chip.className = 'chip';
+            chip.dataset.id = ev.id;
+            chip.style.setProperty('--chip-color', ev.hex);
+            let badge = '';
+            if (ev.options) badge = ` <span class="opt-tag">${ev.options.join('/')}</span>`;
+            else if (ev.candidate) badge = ` <span class="opt-tag candidate-tag">candidate</span>`;
+            else if (ev.result) badge = ` <span class="opt-tag done-tag">done</span>`;
+            chip.innerHTML = `<span class="chip-swatch" style="background:${ev.hex}"></span>${ev.name}${badge}`;
+            chip.addEventListener('click', () => toggleRace(ev.id));
+            chipRow.appendChild(chip);
+          });
+        group.appendChild(chipRow);
+        wrap.appendChild(group);
+      });
+
+      wrap.querySelectorAll('.cat-mini').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setCategorySelection(btn.dataset.cat, btn.dataset.action === 'all');
+        });
       });
     }
 
@@ -871,7 +1008,7 @@
     function hideTip() { tip.classList.remove('on'); }
 
     function visibleEvents() {
-      return events.filter(ev => !ev.optional || selected.has(ev.id))
+      return events.filter(ev => selected.has(ev.id))
         .sort((a, b) => parseD(a.raceDate) - parseD(b.raceDate));
     }
 
