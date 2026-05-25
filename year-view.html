@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Season Timeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --lane-h: 56px;
+      --lane-gap: 10px;
+      --label-w: 200px;
+      --header-h: 56px;
+      --row-bg: rgba(255,255,255,0.02);
+      --bg: #1A1C24;
+      --surface: #20232C;
+      --surface-2: #272A36;
+      --text: #E6E8EF;
+      --text-mid: #9098AE;
+      --text-dim: #5A6178;
+      --line: rgba(255,255,255,0.06);
+      --line-strong: rgba(255,255,255,0.12);
+      --today: #22B8CC;
+      --today-glow: rgba(34, 184, 204, 0.5);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Figtree', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100%;
+      padding: 56px 48px 80px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    header {
+      max-width: 1800px;
+      margin: 0 auto 36px;
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+    }
+
+    header h1 {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #FFFFFF 0%, #8B92AC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .sub {
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    header .nav { margin-left: auto; }
+
+    header .nav a {
+      color: var(--text-mid);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--surface);
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    header .nav a:hover { background: var(--surface-2); color: var(--text); }
+
+    .timeline {
+      max-width: 1800px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px 28px 36px;
+      position: relative;
+    }
+
+    .month-header {
+      display: grid;
+      grid-template-columns: var(--label-w) 1fr;
+      margin-bottom: 18px;
+    }
+
+    .months {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      height: var(--header-h);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .month-cell {
+      border-right: 1px solid var(--line);
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .month-cell:last-child { border-right: none; }
+
+    .month-cell .mname {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .month-cell .mdays {
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .lanes-wrap {
+      position: relative;
+    }
+
+    .lanes {
+      display: flex;
+      flex-direction: column;
+      gap: var(--lane-gap);
+      position: relative;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: var(--label-w) 1fr;
+      height: var(--lane-h);
+      align-items: center;
+    }
+
+    .lane-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 16px;
+      gap: 4px;
+    }
+
+    .lane-label .race-name {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lane-label .race-name .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 0 10px var(--swatch-glow, transparent);
+    }
+
+    .lane-label .race-meta {
+      font-size: 0.56rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding-left: 18px;
+    }
+
+    .lane-track {
+      position: relative;
+      height: 100%;
+      background: var(--row-bg);
+      border-radius: 8px;
+      overflow: visible;
+    }
+
+    .lane-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+      background-size: calc(100% / 12) 100%;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    .phase {
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+      transition: filter 0.15s, transform 0.15s;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .phase:hover { filter: brightness(1.18); z-index: 5; }
+
+    .phase.base { opacity: 0.5; }
+    .phase.build { opacity: 0.72; }
+    .phase.peak { opacity: 0.92; }
+    .phase.taper { opacity: 1; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22); }
+    .phase.train { opacity: 0.78; }
+
+    .race-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.5), 0 0 18px var(--marker-glow, transparent);
+      cursor: default;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .race-marker:hover { transform: translate(-50%, -50%) scale(1.18); }
+
+    .race-marker span {
+      font-size: 0.42rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .today-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: var(--label-w) 1fr;
+    }
+
+    .today-track {
+      position: relative;
+    }
+
+    .today-line {
+      position: absolute;
+      top: -8px;
+      bottom: -8px;
+      width: 2px;
+      background: var(--today);
+      box-shadow: 0 0 14px var(--today-glow);
+      z-index: 20;
+    }
+
+    .today-line::before {
+      content: 'TODAY';
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: var(--today);
+      background: var(--surface);
+      padding: 3px 7px;
+      border-radius: 4px;
+      border: 1px solid var(--today);
+      white-space: nowrap;
+    }
+
+    .tip {
+      position: fixed;
+      background: rgba(28, 30, 40, 0.95);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      font-size: 0.72rem;
+      padding: 12px 16px;
+      border-radius: 12px;
+      pointer-events: none;
+      z-index: 200;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.12s;
+      max-width: 300px;
+    }
+
+    .tip.on { opacity: 1; }
+
+    .tip-title {
+      font-family: 'Unbounded', sans-serif;
+      font-weight: 800;
+      font-size: 0.78rem;
+      margin-bottom: 4px;
+    }
+
+    .tip-meta {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .tip-row {
+      font-size: 0.66rem;
+      color: var(--text-mid);
+      padding: 2px 0;
+    }
+
+    .tip-row strong { color: var(--text); font-weight: 700; }
+
+    .legend {
+      max-width: 1800px;
+      margin: 24px auto 0;
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 0.62rem;
+      color: var(--text-mid);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-swatch {
+      width: 28px;
+      height: 10px;
+      border-radius: 3px;
+      background: #5A6178;
+    }
+
+    .legend-swatch.base { opacity: 0.5; }
+    .legend-swatch.build { opacity: 0.72; }
+    .legend-swatch.peak { opacity: 0.92; }
+    .legend-swatch.taper { opacity: 1; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35); }
+    .legend-swatch.train { opacity: 0.78; background: #1A8FA0; }
+
+    .legend-hint {
+      margin-left: auto;
+      color: var(--text-dim);
+    }
+
+    .annotation {
+      max-width: 1800px;
+      margin: 36px auto 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      font-size: 0.72rem;
+      line-height: 1.55;
+      color: var(--text-mid);
+    }
+
+    .annotation h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .annotation ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 28px; }
+    .annotation li { padding-left: 14px; position: relative; }
+    .annotation li::before { content: '·'; position: absolute; left: 0; color: var(--text-dim); font-weight: 800; }
+    .annotation strong { color: var(--text); font-weight: 700; }
+
+    @media (max-width: 1100px) {
+      :root { --label-w: 150px; --lane-h: 48px; }
+      body { padding: 32px 20px 60px; }
+      header h1 { font-size: 1.4rem; }
+      .month-cell .mname { font-size: 0.62rem; }
+      .lane-label .race-name { font-size: 0.7rem; }
+      .lane-label .race-meta { font-size: 0.5rem; padding-left: 0; }
+      .annotation ul { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      :root { --label-w: 110px; --lane-h: 44px; --header-h: 44px; }
+      header { flex-wrap: wrap; gap: 10px; }
+      header h1 { font-size: 1.1rem; }
+      header .sub { font-size: 0.55rem; }
+      .timeline { padding: 18px 14px 24px; border-radius: 12px; }
+      .month-cell .mname { font-size: 0.5rem; letter-spacing: 0; }
+      .month-cell .mdays { display: none; }
+      .lane-label .race-name { font-size: 0.6rem; }
+      .lane-label .race-meta { display: none; }
+      .phase { font-size: 0; padding: 0 4px; }
+      .race-marker { width: 22px; height: 22px; }
+      .race-marker span { font-size: 0.32rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>2026 Season</h1>
+    <span class="sub">Training & Race Timeline</span>
+    <nav class="nav"><a href="index.html">← Calendar view</a></nav>
+  </header>
+
+  <div class="timeline">
+    <div class="month-header">
+      <div></div>
+      <div class="months" id="months"></div>
+    </div>
+    <div class="lanes-wrap">
+      <div class="lanes" id="lanes"></div>
+      <div class="today-overlay" id="todayOverlay" style="display:none">
+        <div></div>
+        <div class="today-track"><div class="today-line" id="todayLine"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch base"></div>Base</div>
+    <div class="legend-item"><div class="legend-swatch build"></div>Build</div>
+    <div class="legend-item"><div class="legend-swatch peak"></div>Peak</div>
+    <div class="legend-item"><div class="legend-swatch taper"></div>Taper</div>
+    <div class="legend-item"><div class="legend-swatch train"></div>Single training block</div>
+    <div class="legend-hint">Opacity ramps with intensity. Circle = race day.</div>
+  </div>
+
+  <div class="annotation">
+    <h3>Season Notes</h3>
+    <ul>
+      <li><strong>21K Nespresso (Apr 19)</strong> — Half marathon. Result: 1:20:33.</li>
+      <li><strong>5K NDL (May 3)</strong> — Sharpening race. Result: 17:05.</li>
+      <li><strong>Hyrox Ottawa (May 14)</strong> — Result: 1:09.</li>
+      <li><strong>70.3 Tremblant (Jun 21)</strong> — A-race. Full base → taper structure.</li>
+      <li><strong>Spartan Ottawa (Aug 22)</strong> — Obstacle race in build window.</li>
+      <li><strong>Hyrox DC (Sep 6)</strong> — Phased build off post-70.3 base.</li>
+      <li><strong>SAIL Esprit (Sep 12)</strong> — Olympic tri, low pressure. Race as aerobic tempo if HYROX DC leaves residual fatigue.</li>
+      <li><strong>TCS Toronto (Oct 18)</strong> — BQ attempt. A-race.</li>
+      <li><strong>Beirut Marathon (Nov 29)</strong> — Carryover marathon off Toronto fitness.</li>
+    </ul>
+  </div>
+
+  <div class="tip" id="tip"></div>
+
+  <script>
+    const YEAR = 2026;
+    const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DIM = [31,28,31,30,31,30,31,31,30,31,30,31];
+    const WDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    const events = [
+      {
+        id: '21k', name: '21K Nespresso', short: '21K',
+        raceDate: '2026-04-19', hex: '#F07A6A',
+        location: 'Parc Jean-Drapeau', type: 'Half Marathon',
+        training: { start: '2026-01-26', end: '2026-04-18' },
+        result: '1:20:33'
+      },
+      {
+        id: 'ndl', name: '5K NDL', short: 'NDL',
+        raceDate: '2026-05-03', hex: '#4FA85B',
+        location: 'Montreal, QC', type: '5K',
+        training: { start: '2026-04-20', end: '2026-05-02' },
+        result: '17:05'
+      },
+      {
+        id: 'hyr', name: 'Hyrox Ottawa', short: 'HYR',
+        raceDate: '2026-05-14', hex: '#E5C040',
+        location: 'EY Centre, Ottawa', type: 'Hyrox',
+        training: { start: '2026-03-02', end: '2026-05-13' },
+        result: '1:09'
+      },
+      {
+        id: '703', name: '70.3 Tremblant', short: '70.3',
+        raceDate: '2026-06-21', hex: '#1A8FA0',
+        location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
+        phases: [
+          { name: 'Base',  start: '2026-01-21', end: '2026-04-12' },
+          { name: 'Build', start: '2026-04-13', end: '2026-05-31' },
+          { name: 'Peak',  start: '2026-06-01', end: '2026-06-14' },
+          { name: 'Taper', start: '2026-06-15', end: '2026-06-20' },
+        ]
+      },
+      {
+        id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
+        raceDate: '2026-08-22', hex: '#FF6B35',
+        location: 'Calabogie Peaks, ON', type: 'Spartan',
+        training: { start: '2026-06-22', end: '2026-08-21' }
+      },
+      {
+        id: 'dc', name: 'Hyrox DC', short: 'DC',
+        raceDate: '2026-09-06', hex: '#E5C040',
+        location: 'Washington DC', type: 'Hyrox',
+        phases: [
+          { name: 'Base',  start: '2026-06-22', end: '2026-07-21' },
+          { name: 'Build', start: '2026-07-22', end: '2026-08-15' },
+          { name: 'Peak',  start: '2026-08-16', end: '2026-08-30' },
+          { name: 'Taper', start: '2026-08-31', end: '2026-09-04' },
+        ]
+      },
+      {
+        id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
+        raceDate: '2026-09-12', hex: '#E84878',
+        location: 'Parc Jean-Drapeau', type: 'Olympic Tri',
+        training: { start: '2026-07-06', end: '2026-09-11' },
+        note: 'Follows HYROX DC by ~1 week. Race as aerobic tempo if fatigued.'
+      },
+      {
+        id: 'tor', name: 'TCS Toronto', short: 'TOR',
+        raceDate: '2026-10-18', hex: '#C73E3A',
+        location: 'Toronto, ON', type: 'Marathon (BQ)',
+        phases: [
+          { name: 'Base',  start: '2026-08-04', end: '2026-09-06' },
+          { name: 'Build', start: '2026-09-07', end: '2026-10-04' },
+          { name: 'Peak',  start: '2026-10-05', end: '2026-10-11' },
+          { name: 'Taper', start: '2026-10-12', end: '2026-10-17' },
+        ]
+      },
+      {
+        id: 'bei', name: 'Beirut Marathon', short: 'BEI',
+        raceDate: '2026-11-29', hex: '#9B7AE0',
+        location: 'Beirut, Lebanon', type: 'Marathon (carryover)',
+        training: { start: '2026-10-19', end: '2026-11-28' }
+      },
+    ];
+
+    function parseD(s) { return new Date(s + 'T00:00:00'); }
+    const yearStart = new Date(YEAR, 0, 1);
+    const yearEnd = new Date(YEAR, 11, 31, 23, 59, 59);
+    const yearMs = yearEnd.getTime() - yearStart.getTime();
+
+    function pct(date) {
+      const d = (typeof date === 'string') ? parseD(date) : date;
+      return ((d.getTime() - yearStart.getTime()) / yearMs) * 100;
+    }
+
+    function fmtDate(date) {
+      const d = (typeof date === 'string') ? parseD(date) : date;
+      return `${MO[d.getMonth()]} ${d.getDate()}`;
+    }
+
+    function daysBetween(a, b) {
+      const da = (typeof a === 'string') ? parseD(a) : a;
+      const db = (typeof b === 'string') ? parseD(b) : b;
+      return Math.round((db - da) / 86400000) + 1;
+    }
+
+    const monthsEl = document.getElementById('months');
+    for (let m = 0; m < 12; m++) {
+      const cell = document.createElement('div');
+      cell.className = 'month-cell';
+      cell.innerHTML = `
+        <div class="mname">${MO[m]}</div>
+        <div class="mdays">${DIM[m]}d</div>
+      `;
+      monthsEl.appendChild(cell);
+    }
+
+    const lanesEl = document.getElementById('lanes');
+    const tip = document.getElementById('tip');
+
+    function showTip(html, e) {
+      tip.innerHTML = html;
+      tip.classList.add('on');
+      const tr = tip.getBoundingClientRect();
+      let left = e.clientX + 14;
+      let top = e.clientY + 14;
+      if (left + tr.width > window.innerWidth - 8) left = e.clientX - tr.width - 14;
+      if (top + tr.height > window.innerHeight - 8) top = e.clientY - tr.height - 14;
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+    }
+
+    function moveTip(e) {
+      const tr = tip.getBoundingClientRect();
+      let left = e.clientX + 14;
+      let top = e.clientY + 14;
+      if (left + tr.width > window.innerWidth - 8) left = e.clientX - tr.width - 14;
+      if (top + tr.height > window.innerHeight - 8) top = e.clientY - tr.height - 14;
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+    }
+
+    function hideTip() { tip.classList.remove('on'); }
+
+    events.forEach(ev => {
+      const lane = document.createElement('div');
+      lane.className = 'lane';
+
+      const label = document.createElement('div');
+      label.className = 'lane-label';
+      label.innerHTML = `
+        <div class="race-name">
+          <div class="swatch" style="background:${ev.hex};--swatch-glow:${ev.hex}80"></div>
+          ${ev.name}
+        </div>
+        <div class="race-meta">${ev.type} · ${fmtDate(ev.raceDate)}${ev.result ? ' · ' + ev.result : ''}</div>
+      `;
+      lane.appendChild(label);
+
+      const track = document.createElement('div');
+      track.className = 'lane-track';
+
+      if (ev.phases) {
+        ev.phases.forEach(ph => {
+          const left = pct(ph.start);
+          const right = pct(ph.end);
+          const width = right - left + (100 / 365);
+          const div = document.createElement('div');
+          div.className = `phase ${ph.name.toLowerCase()}`;
+          div.style.left = left + '%';
+          div.style.width = width + '%';
+          div.style.background = ev.hex;
+          div.textContent = ph.name;
+          const dayCount = daysBetween(ph.start, ph.end);
+          const tipHtml = `
+            <div class="tip-title" style="color:${ev.hex}">${ph.name} Phase</div>
+            <div class="tip-meta">${ev.short} · ${dayCount} days</div>
+            <div class="tip-row">${fmtDate(ph.start)} → ${fmtDate(ph.end)}</div>
+          `;
+          div.addEventListener('mouseenter', e => showTip(tipHtml, e));
+          div.addEventListener('mousemove', moveTip);
+          div.addEventListener('mouseleave', hideTip);
+          track.appendChild(div);
+        });
+      }
+
+      if (ev.training) {
+        const left = pct(ev.training.start);
+        const right = pct(ev.training.end);
+        const width = right - left + (100 / 365);
+        const div = document.createElement('div');
+        div.className = 'phase train';
+        div.style.left = left + '%';
+        div.style.width = width + '%';
+        div.style.background = ev.hex;
+        div.textContent = 'Training';
+        const dayCount = daysBetween(ev.training.start, ev.training.end);
+        const tipHtml = `
+          <div class="tip-title" style="color:${ev.hex}">Training Block</div>
+          <div class="tip-meta">${ev.short} · ${dayCount} days</div>
+          <div class="tip-row">${fmtDate(ev.training.start)} → ${fmtDate(ev.training.end)}</div>
+        `;
+        div.addEventListener('mouseenter', e => showTip(tipHtml, e));
+        div.addEventListener('mousemove', moveTip);
+        div.addEventListener('mouseleave', hideTip);
+        track.appendChild(div);
+      }
+
+      const marker = document.createElement('div');
+      marker.className = 'race-marker';
+      marker.style.left = pct(ev.raceDate) + '%';
+      marker.style.background = ev.hex;
+      marker.style.setProperty('--marker-glow', ev.hex + 'A0');
+      marker.innerHTML = `<span>${ev.short}</span>`;
+      const rd = parseD(ev.raceDate);
+      const todayD = new Date(); todayD.setHours(0,0,0,0);
+      const diffDays = Math.round((rd - todayD) / 86400000);
+      let countLabel;
+      if (diffDays > 0) countLabel = `${diffDays} days from now`;
+      else if (diffDays === 0) countLabel = 'Today';
+      else if (ev.result) countLabel = `Result: ${ev.result}`;
+      else countLabel = `${-diffDays} days ago`;
+
+      const markerTip = `
+        <div class="tip-title" style="color:${ev.hex}">${ev.name}</div>
+        <div class="tip-meta">${ev.type}</div>
+        <div class="tip-row"><strong>${WDAY[rd.getDay()]}, ${fmtDate(ev.raceDate)}</strong></div>
+        <div class="tip-row">${ev.location}</div>
+        <div class="tip-row" style="margin-top:6px;font-weight:700;color:${ev.hex}">${countLabel}</div>
+        ${ev.note ? `<div class="tip-row" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);font-style:italic">${ev.note}</div>` : ''}
+      `;
+      marker.addEventListener('mouseenter', e => showTip(markerTip, e));
+      marker.addEventListener('mousemove', moveTip);
+      marker.addEventListener('mouseleave', hideTip);
+      track.appendChild(marker);
+
+      lane.appendChild(track);
+      lanesEl.appendChild(lane);
+    });
+
+    // Today line overlay
+    const today = new Date();
+    if (today.getFullYear() === YEAR) {
+      const overlay = document.getElementById('todayOverlay');
+      overlay.style.display = 'grid';
+      document.getElementById('todayLine').style.left = pct(today) + '%';
+    }
+  </script>
+</body>
+</html>
