@@ -91,6 +91,97 @@
 
     header .nav a:hover { background: var(--surface-2); color: var(--text); }
 
+    /* ── Picker ── */
+    .picker {
+      max-width: 1800px;
+      margin: 0 auto 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .picker-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .picker-label {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-right: 4px;
+      min-width: 110px;
+    }
+
+    .preset-btn, .chip {
+      font-family: 'Figtree', system-ui, sans-serif;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .preset-btn:hover, .chip:hover {
+      background: var(--surface-2);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .preset-btn.active {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 6px 8px;
+    }
+
+    .chip-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: currentColor;
+      opacity: 0.5;
+      transition: opacity 0.15s;
+    }
+
+    .chip.on {
+      color: var(--chip-color, var(--text));
+      border-color: var(--chip-color, var(--line-strong));
+      background: rgba(255,255,255,0.04);
+    }
+
+    .chip.on .chip-swatch { opacity: 1; }
+
+    .chip .opt-tag {
+      font-size: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-left: 4px;
+    }
+
+    .chip.on .opt-tag { color: var(--chip-color); opacity: 0.75; }
+
     .timeline {
       max-width: 1800px;
       margin: 0 auto;
@@ -442,9 +533,23 @@
 <body>
   <header>
     <h1>2026 Season</h1>
-    <span class="sub">Training & Race Timeline</span>
+    <span class="sub">Training & Race Timeline · Pick Your Plan</span>
     <nav class="nav"><a href="index.html">← Calendar view</a></nav>
   </header>
+
+  <div class="picker" id="picker">
+    <div class="picker-row">
+      <div class="picker-label">Quick picks</div>
+      <button class="preset-btn" data-preset="all">Show all</button>
+      <button class="preset-btn" data-preset="A">Option A — best balance</button>
+      <button class="preset-btn" data-preset="B">Option B — Tampa</button>
+      <button class="preset-btn" data-preset="C">Option C — compressed</button>
+      <button class="preset-btn" data-preset="none">Clear</button>
+    </div>
+    <div class="picker-row" id="chipRow">
+      <div class="picker-label">Pick races</div>
+    </div>
+  </div>
 
   <div class="timeline">
     <div class="month-header">
@@ -470,20 +575,45 @@
   </div>
 
   <div class="annotation">
-    <h3>Season Notes — Option A</h3>
-    <ul>
-      <li><strong>21K Nespresso (Apr 19)</strong> — Half marathon. Result: 1:20:33.</li>
-      <li><strong>5K NDL (May 3)</strong> — Sharpening race. Result: 17:05.</li>
-      <li><strong>Hyrox Ottawa (May 14)</strong> — Result: 1:09.</li>
-      <li><strong>70.3 Tremblant (Jun 21)</strong> — A-race. Full base → taper.</li>
-      <li><strong>Spartan Ottawa (Aug 22)</strong> — Obstacle race in build window.</li>
-      <li><strong>Hyrox DC (Sept 3-7)</strong> — PR attempt. Full phased build.</li>
-      <li><strong>SAIL Esprit (Sep 12)</strong> — Olympic tri, low pressure. Aerobic tempo if HYROX DC leaves fatigue.</li>
-      <li><strong>Hyrox Toronto (Oct 1-4)</strong> — Controlled / B-race. Tune-up after DC.</li>
-      <li><strong>Lachine Half (Oct 18)</strong> — Primary half. Phased build (carries the run block).</li>
-      <li><strong>Red Baron Half (Nov 1)</strong> — Backup half, 2 weeks after Lachine.</li>
-      <li><strong>Beirut Marathon (Nov 29)</strong> — Carryover marathon off half fitness.</li>
-    </ul>
+    <h3>Three Plans</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;font-size:0.7rem">
+      <div>
+        <div style="font-family:'Unbounded',sans-serif;font-weight:800;font-size:0.7rem;color:var(--text);margin-bottom:8px;letter-spacing:0.04em">OPTION A · Best balance</div>
+        <ul style="display:flex;flex-direction:column;gap:4px">
+          <li>Sept 3-7 · <strong>Hyrox DC</strong> — PR attempt</li>
+          <li>Oct 1-4 · <strong>Hyrox Toronto</strong> — controlled/B</li>
+          <li>Oct 18 · <strong>Lachine Half</strong> — primary</li>
+          <li>Nov 1 · <strong>Red Baron Half</strong> — backup</li>
+          <li>Nov 29 · <strong>Beirut Marathon</strong></li>
+        </ul>
+        <div style="margin-top:10px;color:var(--text-dim);font-size:0.62rem;line-height:1.5">Two Hyrox + two half chances spaced two weeks apart, then 4 weeks to Beirut.</div>
+      </div>
+      <div>
+        <div style="font-family:'Unbounded',sans-serif;font-weight:800;font-size:0.7rem;color:var(--text);margin-bottom:8px;letter-spacing:0.04em">OPTION B · Tampa</div>
+        <ul style="display:flex;flex-direction:column;gap:4px">
+          <li>Sept 3-7 · <strong>Hyrox DC</strong> — PR attempt</li>
+          <li>Oct 3 · <strong>P'tit Train du Nord Half</strong></li>
+          <li>Oct 18 · <strong>Lachine Half</strong></li>
+          <li>Oct 23-25 · <strong>Hyrox Tampa</strong> — controlled only</li>
+          <li>Nov 29 · <strong>Beirut</strong></li>
+        </ul>
+        <div style="margin-top:10px;color:var(--text-dim);font-size:0.62rem;line-height:1.5">Works on paper — but Tampa 5-7 days after Lachine is risky.</div>
+      </div>
+      <div>
+        <div style="font-family:'Unbounded',sans-serif;font-weight:800;font-size:0.7rem;color:var(--text);margin-bottom:8px;letter-spacing:0.04em">OPTION C · Compressed</div>
+        <ul style="display:flex;flex-direction:column;gap:4px">
+          <li>Sept 3-7 · <strong>Hyrox DC</strong></li>
+          <li>Oct 18 · <strong>Lachine Half</strong></li>
+          <li>Oct 23-25 · <strong>Hyrox Tampa</strong></li>
+          <li>Oct 25 · <strong>Parc Jean-Drapeau Half</strong></li>
+          <li>Nov 29 · <strong>Beirut</strong></li>
+        </ul>
+        <div style="margin-top:10px;color:var(--text-dim);font-size:0.62rem;line-height:1.5">Too compressed — Tampa and Parc J-D overlap the same weekend.</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--text-dim);font-size:0.62rem;line-height:1.55">
+      <strong style="color:var(--text-mid)">Always in the year:</strong> 21K Nespresso (Apr 19, 1:20:33) · 5K NDL (May 3, 17:05) · Hyrox Ottawa (May 14, 1:09) · 70.3 Tremblant (Jun 21, A-race) · Spartan Ottawa (Aug 22) · SAIL Esprit Olympic Tri (Sept 12).
+    </div>
   </div>
 
   <div class="tip" id="tip"></div>
@@ -559,7 +689,16 @@
         location: 'Toronto, ON', type: 'Hyrox',
         weekend: 'Oct 1-4',
         training: { start: '2026-09-13', end: '2026-10-02' },
-        note: 'Controlled / B-race. Tune-up after DC PR attempt.'
+        note: 'Controlled / B-race. Tune-up after DC PR attempt.',
+        optional: true, options: ['A']
+      },
+      {
+        id: 'ptn', name: "P'tit Train du Nord Half", short: 'PTN',
+        raceDate: '2026-10-03', hex: '#FF8C5A',
+        location: 'Laurentides, QC', type: 'Half Marathon (tune-up)',
+        training: { start: '2026-09-13', end: '2026-10-02' },
+        note: 'Tune-up half. Sits in same Oct 3 slot as Hyrox Toronto in Option B.',
+        optional: true, options: ['B']
       },
       {
         id: 'lach', name: 'Lachine Half', short: 'LAC',
@@ -570,14 +709,34 @@
           { name: 'Build', start: '2026-09-07', end: '2026-10-04' },
           { name: 'Peak',  start: '2026-10-05', end: '2026-10-11' },
           { name: 'Taper', start: '2026-10-12', end: '2026-10-17' },
-        ]
+        ],
+        note: 'Primary half. Common to all 3 options.',
+        optional: true, options: ['A', 'B', 'C']
+      },
+      {
+        id: 'hyrTam', name: 'Hyrox Tampa', short: 'TAM',
+        raceDate: '2026-10-24', hex: '#C99012',
+        location: 'Tampa, FL', type: 'Hyrox (controlled)',
+        weekend: 'Oct 23-25',
+        training: { start: '2026-10-19', end: '2026-10-23' },
+        note: 'Controlled only. Tight 5-7 day gap after Lachine — risky.',
+        optional: true, options: ['B', 'C']
+      },
+      {
+        id: 'pjd', name: 'Parc Jean-Drapeau Half', short: 'PJD',
+        raceDate: '2026-10-25', hex: '#E55050',
+        location: 'Parc Jean-Drapeau', type: 'Half Marathon',
+        training: { start: '2026-10-19', end: '2026-10-24' },
+        note: 'One week after Lachine, same weekend as Tampa. Compressed.',
+        optional: true, options: ['C']
       },
       {
         id: 'redb', name: 'Red Baron Half', short: 'RB',
         raceDate: '2026-11-01', hex: '#B33A3A',
         location: 'Montreal, QC', type: 'Half Marathon (backup)',
         training: { start: '2026-10-19', end: '2026-10-31' },
-        note: 'Backup half — 2 weeks after Lachine.'
+        note: 'Backup half — 2 weeks after Lachine.',
+        optional: true, options: ['A']
       },
       {
         id: 'bei', name: 'Beirut Marathon', short: 'BEI',
@@ -622,6 +781,71 @@
     const lanesEl = document.getElementById('lanes');
     const tip = document.getElementById('tip');
 
+    /* ── Picker state ── */
+    const optionPresets = {
+      'A': ['hyrTor', 'lach', 'redb'],
+      'B': ['ptn', 'lach', 'hyrTam'],
+      'C': ['lach', 'hyrTam', 'pjd'],
+    };
+    const optionalIds = events.filter(e => e.optional).map(e => e.id);
+    let activePreset = 'all';
+    let selected = new Set(optionalIds);
+
+    function applyPreset(key) {
+      activePreset = key;
+      if (key === 'all') selected = new Set(optionalIds);
+      else if (key === 'none') selected = new Set();
+      else selected = new Set(optionPresets[key] || []);
+      renderLanes();
+      updateChips();
+      updatePresetButtons();
+    }
+
+    function toggleRace(id) {
+      if (selected.has(id)) selected.delete(id);
+      else selected.add(id);
+      activePreset = detectPreset();
+      renderLanes();
+      updateChips();
+      updatePresetButtons();
+    }
+
+    function detectPreset() {
+      const sel = [...selected].sort().join(',');
+      if (sel === [...optionalIds].sort().join(',')) return 'all';
+      if (sel === '') return 'none';
+      for (const k of Object.keys(optionPresets)) {
+        if (sel === [...optionPresets[k]].sort().join(',')) return k;
+      }
+      return null;
+    }
+
+    function updatePresetButtons() {
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.preset === activePreset);
+      });
+    }
+
+    function buildChips() {
+      const row = document.getElementById('chipRow');
+      events.filter(e => e.optional).forEach(ev => {
+        const chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.dataset.id = ev.id;
+        chip.style.setProperty('--chip-color', ev.hex);
+        const optTag = ev.options ? ev.options.join('/') : '';
+        chip.innerHTML = `<span class="chip-swatch" style="background:${ev.hex}"></span>${ev.name}${optTag ? ` <span class="opt-tag">${optTag}</span>` : ''}`;
+        chip.addEventListener('click', () => toggleRace(ev.id));
+        row.appendChild(chip);
+      });
+    }
+
+    function updateChips() {
+      document.querySelectorAll('.chip').forEach(c => {
+        c.classList.toggle('on', selected.has(c.dataset.id));
+      });
+    }
+
     function showTip(html, e) {
       tip.innerHTML = html;
       tip.classList.add('on');
@@ -646,7 +870,14 @@
 
     function hideTip() { tip.classList.remove('on'); }
 
-    events.forEach(ev => {
+    function visibleEvents() {
+      return events.filter(ev => !ev.optional || selected.has(ev.id))
+        .sort((a, b) => parseD(a.raceDate) - parseD(b.raceDate));
+    }
+
+    function renderLanes() {
+      lanesEl.innerHTML = '';
+      visibleEvents().forEach(ev => {
       const lane = document.createElement('div');
       lane.className = 'lane';
 
@@ -740,7 +971,8 @@
 
       lane.appendChild(track);
       lanesEl.appendChild(lane);
-    });
+      });
+    }
 
     // Today line overlay
     const today = new Date();
@@ -749,6 +981,13 @@
       overlay.style.display = 'grid';
       document.getElementById('todayLine').style.left = pct(today) + '%';
     }
+
+    // Wire up picker
+    buildChips();
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+    });
+    applyPreset('all');
   </script>
 </body>
 </html>
