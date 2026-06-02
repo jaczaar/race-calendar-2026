@@ -838,6 +838,21 @@
         note: '3-month training block — long carryover build through the fall.'
       },
     ];
+    /* Unify race colors by type (matches the wallpaper calendar):
+       all halfs one shade, all marathons a darker shade of the same family,
+       all hyrox one shade, tris share a family with 70.3 the darker shade. */
+    const TYPE_COLORS = {
+      'Half Marathon': '#EC8E84',
+      'Marathon': '#B83227',
+      'Hyrox': '#E5C040',
+      'Triathlon': '#3DB4C6',
+    };
+    events.forEach(ev => {
+      if (ev.id === '703') ev.hex = '#136B77';
+      else if (TYPE_COLORS[ev.category]) ev.hex = TYPE_COLORS[ev.category];
+      if (ev.id === 'spo') delete ev.training;
+    });
+
 
     function parseD(s) { return new Date(s + 'T00:00:00'); }
     const yearStart = new Date(YEAR, 0, 1);
