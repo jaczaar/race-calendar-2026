@@ -670,7 +670,7 @@
       </div>
     </div>
     <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--text-dim);font-size:0.62rem;line-height:1.55">
-      <strong style="color:var(--text-mid)">Locked in the year:</strong> 21K Nespresso (Apr 19, 1:20:33) · 5K NDL (May 3, 17:05) · Hyrox Ottawa (May 14, 1:09) · 70.3 Tremblant (Jun 21, A-race) · Spartan Ottawa (Aug 22) · SAIL Esprit Olympic Tri (Sept 12).
+      <strong style="color:var(--text-mid)">Locked in the year:</strong> 21K Nespresso (Apr 19, 1:20:33) · 5K NDL (May 3, 17:05) · Hyrox Ottawa (May 14, 1:09) · 70.3 Tremblant (Jun 21, A-race) · 5K post-70.3 (Jul 5, tune-up) · Spartan Ottawa (Aug 22) · SAIL Esprit Olympic Tri (Sept 12).
       <br><br>
       <strong style="color:var(--text-mid)">Other half marathons in the area (candidates):</strong> Mont-Tremblant Half (Aug 9, scenic Laurentides) · Beneva Montréal Half (Oct 11, biggest Montreal half) · P'tit Train du Nord Half (Oct 3) · Parc Jean-Drapeau Sun Life Half (Oct 25). All have 2-month training blocks; toggle on to see how they fit.
     </div>
@@ -710,16 +710,76 @@
         result: '1:09'
       },
       {
+        id: 'ott5k', name: 'Ottawa 5K', short: 'O5K',
+        raceDate: '2026-05-23', hex: '#4FA85B',
+        location: 'Ottawa, ON', type: '5K',
+        category: '5K',
+        weekend: 'May 23-24',
+        note: 'Tamarack Ottawa Race Weekend. Big-field Saturday 5K.',
+        candidate: true
+      },
+      {
+        id: 'ottH', name: 'Ottawa Half', short: 'OTH',
+        raceDate: '2026-05-24', hex: '#D75345',
+        location: 'Ottawa, ON', type: 'Half Marathon',
+        category: 'Half Marathon',
+        weekend: 'May 23-24',
+        training: { start: '2026-03-24', end: '2026-05-23' },
+        note: 'Tamarack Ottawa Race Weekend. Fast, big-field half.',
+        candidate: true
+      },
+      {
+        id: 'ottM', name: 'Ottawa Marathon', short: 'OTM',
+        raceDate: '2026-05-24', hex: '#B83227',
+        location: 'Ottawa, ON', type: 'Marathon',
+        category: 'Marathon',
+        weekend: 'May 23-24',
+        training: { start: '2026-02-24', end: '2026-05-23' },
+        note: 'Tamarack Ottawa Race Weekend. Flat spring marathon — sits inside the 70.3 build, not realistic as an A-race.',
+        candidate: true
+      },
+      {
+        id: 'lavalH', name: 'Laval Half', short: 'LAV',
+        raceDate: '2026-05-31', hex: '#D75345',
+        location: 'Laval, QC', type: 'Half Marathon',
+        category: 'Half Marathon',
+        training: { start: '2026-03-31', end: '2026-05-30' },
+        note: 'Local spring half, one week after Ottawa. Overlaps 70.3 build.',
+        candidate: true
+      },
+      {
+        id: 'mirabelH', name: 'Mirabel Half', short: 'MIR',
+        raceDate: '2026-06-14', hex: '#D75345',
+        location: 'Mirabel, QC', type: 'Half Marathon',
+        category: 'Half Marathon',
+        weekend: 'Jun 13-14',
+        training: { start: '2026-04-14', end: '2026-06-13' },
+        note: 'Local half one week before 70.3 Tremblant — too close to race fresh.',
+        candidate: true
+      },
+      {
+        id: 'pcH', name: 'Pointe-Claire Half', short: 'PCH',
+        raceDate: '2026-06-14', hex: '#D75345',
+        location: 'Pointe-Claire, QC', type: 'Half Marathon',
+        category: 'Half Marathon',
+        training: { start: '2026-04-14', end: '2026-06-13' },
+        note: 'West-island half, same weekend as Mirabel and one week pre-70.3.',
+        candidate: true
+      },
+      {
         id: '703', name: '70.3 Tremblant', short: '70.3',
         raceDate: '2026-06-21', hex: '#1A8FA0',
         location: 'Mont-Tremblant, QC', type: '70.3 Triathlon',
         category: 'Triathlon',
-        phases: [
-          { name: 'Base',  start: '2026-01-21', end: '2026-04-12' },
-          { name: 'Build', start: '2026-04-13', end: '2026-05-31' },
-          { name: 'Peak',  start: '2026-06-01', end: '2026-06-14' },
-          { name: 'Taper', start: '2026-06-15', end: '2026-06-20' },
-        ]
+        training: { start: '2026-01-21', end: '2026-06-20' }
+      },
+      {
+        id: '5kpost', name: '5K Sorel-Tracy', short: '5K',
+        raceDate: '2026-07-15', hex: '#4FA85B',
+        location: 'Sorel-Tracy, QC', type: '5K',
+        category: '5K',
+        training: { start: '2026-06-22', end: '2026-07-14' },
+        note: 'Speed tune-up ~3 weeks after 70.3 Tremblant, off carryover fitness.'
       },
       {
         id: 'tremHalf', name: 'Mont-Tremblant Half', short: 'TRH',
@@ -743,13 +803,8 @@
         location: 'Washington DC', type: 'Hyrox',
         category: 'Hyrox',
         weekend: 'Sept 3-7',
-        note: 'PR attempt — 2-month phased build.',
-        phases: [
-          { name: 'Base',  start: '2026-07-05', end: '2026-08-01' },
-          { name: 'Build', start: '2026-08-02', end: '2026-08-22' },
-          { name: 'Peak',  start: '2026-08-23', end: '2026-08-30' },
-          { name: 'Taper', start: '2026-08-31', end: '2026-09-04' },
-        ]
+        note: 'PR attempt — 2-month build.',
+        training: { start: '2026-07-05', end: '2026-09-04' }
       },
       {
         id: 'sail', name: 'SAIL Esprit', short: 'SAIL',
@@ -779,6 +834,83 @@
         options: ['B']
       },
       {
+        id: 'qc5k', name: 'Québec City 5K', short: 'Q5K',
+        raceDate: '2026-10-03', hex: '#4FA85B',
+        location: 'Québec City, QC', type: '5K',
+        category: '5K',
+        weekend: 'Oct 2-4',
+        note: 'SSQ Marathon de Québec weekend. Saturday 5K.',
+        candidate: true
+      },
+      {
+        id: 'qcH', name: 'Québec City Half', short: 'QCH',
+        raceDate: '2026-10-04', hex: '#D75345',
+        location: 'Québec City, QC', type: 'Half Marathon',
+        category: 'Half Marathon',
+        weekend: 'Oct 2-4',
+        training: { start: '2026-08-04', end: '2026-10-03' },
+        note: 'SSQ Marathon de Québec weekend. Scenic half through Old Québec.',
+        candidate: true
+      },
+      {
+        id: 'qcM', name: 'Marathon de Québec', short: 'QCM',
+        raceDate: '2026-10-04', hex: '#B83227',
+        location: 'Québec City, QC', type: 'Marathon',
+        category: 'Marathon',
+        weekend: 'Oct 2-4',
+        training: { start: '2026-07-04', end: '2026-10-03' },
+        note: 'SSQ Marathon de Québec. Earliest fall full — 8 weeks before Beirut, conflicts with the half block.',
+        candidate: true
+      },
+      {
+        id: 'beneva5k', name: 'Beneva Montréal 5K', short: 'B5K',
+        raceDate: '2026-10-10', hex: '#4FA85B',
+        location: 'Montreal, QC', type: '5K',
+        category: '5K',
+        weekend: 'Oct 9-11',
+        note: 'Marathon Beneva weekend. Clean local 5K inside the half block — running-options.html top 5K pick.',
+        candidate: true
+      },
+      {
+        id: 'benevaM', name: 'Marathon Beneva de Montréal', short: 'BNM',
+        raceDate: '2026-10-11', hex: '#B83227',
+        location: 'Montreal, QC', type: 'Marathon',
+        category: 'Marathon',
+        weekend: 'Oct 9-11',
+        training: { start: '2026-07-11', end: '2026-10-10' },
+        note: 'Largest Montreal marathon. Home-city full ~7 weeks before Beirut.',
+        candidate: true
+      },
+      {
+        id: 'tor5k', name: 'Toronto Waterfront 5K', short: 'T5K',
+        raceDate: '2026-10-17', hex: '#4FA85B',
+        location: 'Toronto, ON', type: '5K',
+        category: '5K',
+        weekend: 'Oct 17-18',
+        note: 'TCS Toronto Waterfront weekend. Saturday 5K.',
+        candidate: true
+      },
+      {
+        id: 'torH', name: 'Toronto Waterfront Half', short: 'TWH',
+        raceDate: '2026-10-18', hex: '#D75345',
+        location: 'Toronto, ON', type: 'Half Marathon',
+        category: 'Half Marathon',
+        weekend: 'Oct 17-18',
+        training: { start: '2026-08-18', end: '2026-10-17' },
+        note: 'TCS Toronto Waterfront. Fast big-field half — the planner-recommended fall A-race option, same day as Lachine.',
+        candidate: true
+      },
+      {
+        id: 'torM', name: 'TCS Toronto Marathon', short: 'TOM',
+        raceDate: '2026-10-18', hex: '#B83227',
+        location: 'Toronto, ON', type: 'Marathon',
+        category: 'Marathon',
+        weekend: 'Oct 17-18',
+        training: { start: '2026-07-18', end: '2026-10-17' },
+        note: 'TCS Toronto Waterfront full (BQ course). Previously dropped in favor of Beirut-only fall.',
+        candidate: true
+      },
+      {
         id: 'beneva', name: 'Beneva Montréal Half', short: 'BNV',
         raceDate: '2026-10-11', hex: '#D85F4F',
         location: 'Montreal, QC', type: 'Half Marathon (big-field)',
@@ -792,13 +924,8 @@
         raceDate: '2026-10-18', hex: '#C73E3A',
         location: 'Lachine, QC', type: 'Half Marathon (primary)',
         category: 'Half Marathon',
-        phases: [
-          { name: 'Base',  start: '2026-08-18', end: '2026-09-13' },
-          { name: 'Build', start: '2026-09-14', end: '2026-10-04' },
-          { name: 'Peak',  start: '2026-10-05', end: '2026-10-11' },
-          { name: 'Taper', start: '2026-10-12', end: '2026-10-17' },
-        ],
-        note: 'Primary half — phased 2-month build. Common to all 3 options.',
+        training: { start: '2026-08-18', end: '2026-10-17' },
+        note: 'Primary half — 2-month build. Common to all 3 options.',
         options: ['A', 'B', 'C']
       },
       {
