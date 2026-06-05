@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Running Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ece4d9;
+      --ink: #241f1a;
+      --muted: #6f665d;
+      --panel: rgba(255, 250, 244, 0.78);
+      --panel-strong: rgba(255, 248, 240, 0.9);
+      --line: rgba(36, 31, 26, 0.08);
+      --accent: #0d6b63;
+      --accent-2: #d87044;
+      --shadow: 0 24px 80px rgba(36, 31, 26, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: 'Figtree', system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 107, 99, 0.14), transparent 32%),
+        radial-gradient(circle at top right, rgba(216, 112, 68, 0.14), transparent 30%),
+        linear-gradient(180deg, #f5efe7 0%, var(--bg) 100%);
+      padding: 56px 20px 80px;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: 'Unbounded', sans-serif;
+      line-height: 1;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      letter-spacing: -0.05em;
+      max-width: 9ch;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      font-size: 1.08rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .card.strong { background: var(--panel-strong); }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink);
+      background: rgba(255,255,255,0.42);
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.74rem;
+      margin-bottom: 10px;
+    }
+
+    .decision {
+      font-size: 1.35rem;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .copy {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    .option {
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .option:first-of-type { border-top: 0; padding-top: 0; }
+
+    .option h3 {
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .meta span {
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(13, 107, 99, 0.08);
+      color: var(--accent);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    li + li { margin-top: 8px; }
+
+    .live {
+      display: grid;
+      gap: 12px;
+    }
+
+    .live-item {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.42);
+    }
+
+    .live-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.16em;
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 32px 16px 56px; }
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 22px; border-radius: 24px; }
+      .decision { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">2026 Running Planner</div>
+      <h1>Run the fast half, keep the real marathon.</h1>
+      <p class="subtitle">
+        Secondary planning page for Jacques' 2026 race calendar. This keeps the main calendar untouched while capturing the next running decisions:
+        add one 5K, keep a sharp half-marathon stack, and protect Beirut as the only fall marathon.
+      </p>
+    </section>
+
+    <section class="grid">
+      <div class="stack">
+        <article class="card strong">
+          <div class="kicker">Recommendation Stack</div>
+          <h2 class="decision">Add a 5K tune-up, keep Toronto Waterfront Half as the fall A-race, and do not add another fall marathon before Beirut.</h2>
+          <p class="copy">
+            The clean version of the year still holds: 70.3 first, HYROX DC second, a true half-marathon block into mid-October, then a Beirut-specific marathon block.
+            The new addition should be a short sharpening race, not another long-race commitment.
+          </p>
+          <div class="pill-row">
+            <div class="pill">5K: yes</div>
+            <div class="pill">Half PR: Toronto Waterfront</div>
+            <div class="pill">Marathon: Beirut only</div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">5K Plan</h2>
+
+          <div class="option">
+            <h3>Best use of the 5K</h3>
+            <div class="meta">
+              <span>late Sep or early Oct</span>
+              <span>during half block</span>
+              <span>low recovery cost</span>
+            </div>
+            <ul>
+              <li>Use the 5K as a sharpening race during the Toronto Waterfront half block, ideally 2 to 3 weeks before Oct 18.</li>
+              <li>That timing gives you leg speed and pacing feedback without compromising either HYROX DC recovery or Beirut prep.</li>
+              <li>If a strong local race is not available, a measured solo or club 5K effort is still good enough for the training purpose.</li>
+            </ul>
+          </div>
+
+          <div class="option">
+            <h3>Recommended candidate: Marathon Beneva de Montreal 5K</h3>
+            <div class="meta">
+              <span>Oct 10, 2026</span>
+              <span>Montreal</span>
+              <span>8 days pre-Toronto Half</span>
+            </div>
+            <ul>
+              <li>This is the cleanest exact 5K candidate found in the live check: local, official, and placed perfectly inside the half-marathon sharpening window.</li>
+              <li>It gives you a true race effort one week before Toronto Waterfront without forcing travel or a plan rewrite.</li>
+              <li><a href="https://couronsmtl.com/courses/marathon/5km/">Official 5K page</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">Half-Marathon Options</h2>
+
+          <div class="option">
+            <h3>Primary: Toronto Waterfront Half Marathon</h3>
+            <div class="meta">
+              <span>Oct 18, 2026</span>
+              <span>fall A-race</span>
+            </div>
+            <ul>
+              <li>This remains the best headline half: fast course, strong field, clear target, and six weeks on either side from DC HYROX and Beirut.</li>
+              <li>It should stay the one race the whole fall run block points toward.</li>
+            </ul>
+          </div>
+
+          <div class="option">
+            <h3>Local same-day fallback: Lachine Half Marathon</h3>
+            <div class="meta">
+              <span>Oct 18, 2026</span>
+              <span>Montreal</span>
+            </div>
+            <ul>
+              <li>Lachine is the clean local substitute if Toronto logistics stop being worth it.</li>
+              <li>It preserves the exact same training structure and still gives a proper race day instead of forcing a plan rewrite.</li>
+              <li><a href="https://demimarathonlachine.com/">Official site</a></li>
+            </ul>
+          </div>
+
+          <div class="option">
+            <h3>Backup under the two-week rule: Red Baron Half</h3>
+            <div class="meta">
+              <span>Nov 1, 2026</span>
+              <span>travel required</span>
+            </div>
+            <ul>
+              <li>If you want a true backup race after Oct 18, Red Baron is still the best timing fit from the earlier discussion.</li>
+              <li>The tradeoff is obvious: travel, less certainty on official 2026 details during this check, and one less week before Beirut.</li>
+              <li>Use this only as insurance, not as the main plan.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">Marathon Decision</h2>
+          <div class="option">
+            <h3>Beirut stays the only fall marathon</h3>
+            <div class="meta">
+              <span>Nov 29, 2026</span>
+              <span>AG podium target</span>
+            </div>
+            <ul>
+              <li>Do not add Toronto Marathon back in.</li>
+              <li>Do not add another North American fall marathon before Beirut.</li>
+              <li>The useful structure is a hard half build, then a short marathon-specific conversion block into Beirut.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="card">
+          <h2 class="section-title">What To Avoid</h2>
+          <div class="option">
+            <h3>P'tit Train du Nord Half as a main target</h3>
+            <ul>
+              <li>Too close to HYROX Toronto weekend to be clean for this version of the year.</li>
+              <li><a href="https://ptittraindunord.com/">Official site</a></li>
+            </ul>
+          </div>
+          <div class="option">
+            <h3>Using the 5K too early</h3>
+            <ul>
+              <li>A summer 5K before 70.3 does not solve a real planning problem.</li>
+              <li>The best return comes when it sharpens the fall half block.</li>
+            </ul>
+          </div>
+          <div class="option">
+            <h3>Turning Tampa into a deep HYROX effort</h3>
+            <ul>
+              <li>That would eat into the Beirut build for very little strategic upside.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">Live Check Notes</h2>
+          <div class="live">
+            <div class="live-item">
+              <strong>Lachine Half</strong>
+              Official site responded during this check and still looks like the clearest same-day local replacement for Toronto Waterfront.
+            </div>
+            <div class="live-item">
+              <strong>Toronto Waterfront</strong>
+              The official domain is live, but direct fetches were Cloudflare-blocked during this pass, so this page keeps the existing plan rather than pretending to freshly verify every field.
+            </div>
+            <div class="live-item">
+              <strong>Montreal Beneva 5K</strong>
+              Official site confirms Marathon Beneva weekend runs Oct 9 to 11, 2026, and the 5K tile shows Oct 10, 2026. That makes it the best current 5K addition.
+            </div>
+            <div class="live-item">
+              <strong>Red Baron Half</strong>
+              The domain used in the earlier note did not resolve during this pass, so keep it as a planning backup, not a locked race entry.
+            </div>
+            <div class="live-item">
+              <strong>P'tit Train du Nord</strong>
+              Official site responded, which is enough to keep it on the board as a real event, but not enough to beat the schedule conflict.
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="section-title">Bottom Line</h2>
+          <p class="copy">
+            If the goal is the best overall year rather than the fullest calendar, the move is simple: keep the half and marathon structure already chosen, add one 5K inside the half build, and avoid reopening the marathon debate unless Beirut is downgraded.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Built as a secondary page so the main calendar stays clean. Update this page again once the exact fall 5K candidate is chosen.
+    </p>
+  </main>
+</body>
+</html>
