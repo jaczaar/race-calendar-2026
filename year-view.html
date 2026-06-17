@@ -815,6 +815,14 @@
         note: 'Follows HYROX DC by ~1 week. Race as aerobic tempo if fatigued.'
       },
       {
+        id: 'longH', name: 'Longueuil Half', short: 'LGH',
+        raceDate: '2026-09-20', hex: '#D75345',
+        location: 'Parc Michel-Chartrand, Longueuil, QC', type: 'Half Marathon (Sun Life)',
+        category: 'Half Marathon',
+        training: { start: '2026-07-20', end: '2026-09-19' },
+        note: 'Demi-Marathon Sun Life de Longueuil. ~1 week after SAIL Esprit.'
+      },
+      {
         id: 'hyrTor', name: 'Hyrox Toronto', short: 'TOR',
         raceDate: '2026-10-03', hex: '#D4A017',
         location: 'Toronto, ON', type: 'Hyrox',
@@ -1024,14 +1032,32 @@
       'C': [...coreIds, 'lach', 'hyrTam', 'pjd'],
     };
     const allIds = events.map(e => e.id);
-    let activePreset = 'all';
-    let selected = new Set(allIds);
+    // Default plan (first visit / cleared storage): the locked-in 2026 schedule.
+    const defaultIds = ['21k', 'ndl', 'hyr', 'ottM', '703', '5kpost', 'spo', 'dc', 'sail', 'longH', 'torM', 'pjd', 'bei'];
+    const STORAGE_KEY = 'raceCalendar2026.selection.v2';
+
+    function saveSelection() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...selected])); } catch (e) {}
+    }
+
+    function loadSelection() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const ids = JSON.parse(raw).filter(id => allIds.includes(id));
+        return new Set(ids);
+      } catch (e) { return null; }
+    }
+
+    let selected = loadSelection() || new Set(defaultIds);
+    let activePreset = detectPreset();
 
     function applyPreset(key) {
       activePreset = key;
       if (key === 'all') selected = new Set(allIds);
       else if (key === 'none') selected = new Set();
       else selected = new Set(optionPresets[key] || []);
+      saveSelection();
       renderLanes();
       updateChips();
       updatePresetButtons();
@@ -1041,6 +1067,7 @@
       if (selected.has(id)) selected.delete(id);
       else selected.add(id);
       activePreset = detectPreset();
+      saveSelection();
       renderLanes();
       updateChips();
       updatePresetButtons();
@@ -1068,6 +1095,7 @@
         else selected.delete(e.id);
       });
       activePreset = detectPreset();
+      saveSelection();
       renderLanes();
       updateChips();
       updatePresetButtons();
@@ -1266,7 +1294,10 @@
     document.querySelectorAll('.preset-btn').forEach(btn => {
       btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
     });
-    applyPreset('all');
+    // Restore saved selection (defaults to all on first visit)
+    renderLanes();
+    updateChips();
+    updatePresetButtons();
   </script>
 </body>
 </html>
