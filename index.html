@@ -607,6 +607,13 @@
         training: { start: '2026-06-22', end: '2026-07-14' }
       },
       {
+        id: 'maine', name: '70.3 Maine', short: '70.3',
+        raceDate: '2026-07-26', hex: '#136B77', potential: false,
+        location: 'Maine, USA', type: '70.3 Triathlon',
+        training: { start: '2026-06-22', end: '2026-07-25' },
+        overrides: ['sail']
+      },
+      {
         id: 'spo', name: 'Spartan Ottawa', short: 'SPO',
         raceDate: '2026-08-22', hex: '#FF6B35', potential: false,
         location: 'Calabogie Peaks, ON', type: 'Spartan'
@@ -660,9 +667,7 @@
     ];
 
     /* Days away — can't train or race (greyed out) */
-    const unavailable = [
-      { start: '2026-07-22', end: '2026-08-03', label: 'Away — trip' },
-    ];
+    const unavailable = [];
 
     /* Desaturated training fills for dark bg depth */
     function desaturate(hex, amount) {
@@ -787,7 +792,7 @@
         while (cur <= te) {
           const key = ds(cur.getMonth(), cur.getDate());
           if (dateMap[key]) {
-            dateMap[key].layers.push({ fill: ev.trainingFill, accent: ev.hex, id: ev.id, end, marathon: ev.marathon, half: ev.half });
+            dateMap[key].layers.push({ fill: ev.trainingFill, accent: ev.hex, id: ev.id, end, marathon: ev.marathon, half: ev.half, overrides: ev.overrides });
             dateMap[key].tips.push({ color: ev.hex, text: `${ev.short} Training` });
           }
           cur.setDate(cur.getDate() + 1);
@@ -897,6 +902,10 @@
               let u = [...byId.values()].sort((a, b) => (a.end || 0) - (b.end || 0));
               // Marathon and half share a color family; on overlap the marathon takes over.
               if (u.some(l => l.marathon)) u = u.filter(l => !l.half);
+              // Training precedence: an event listing `overrides` wins over those events on overlap days.
+              const overridden = new Set();
+              u.forEach(l => { if (l.overrides) l.overrides.forEach(id => overridden.add(id)); });
+              if (overridden.size) u = u.filter(l => !overridden.has(l.id));
               if (u.length === 1) {
                 el.style.background = u[0].fill;
               } else if (u.length === 2) {
